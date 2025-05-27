@@ -1,6 +1,31 @@
 import React, { useState, useMemo } from 'react';
 import NoteEditorWithUndoRedo from './NoteEditorWithUndoRedo';
 
+/**
+ * Theme options for UI: Light, Dark, Sepia, High Contrast
+ */
+const THEME_PRESETS = [
+  {
+    id: 'light',
+    name: 'Light',
+    emoji: '🌞',
+  },
+  {
+    id: 'dark',
+    name: 'Dark',
+    emoji: '🌚',
+  },
+  {
+    id: 'sepia',
+    name: 'Sepia',
+    emoji: '📜',
+  },
+  {
+    id: 'contrast',
+    name: 'High Contrast',
+    emoji: '🟨',
+  }
+];
 // PUBLIC_INTERFACE
 function NoteEaseMainContainer() {
   // Demo state for notes and tags
