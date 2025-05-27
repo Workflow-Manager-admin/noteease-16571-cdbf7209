@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import NoteEditorWithUndoRedo from './NoteEditorWithUndoRedo';
 
 // PUBLIC_INTERFACE
 function NoteEaseMainContainer() {
