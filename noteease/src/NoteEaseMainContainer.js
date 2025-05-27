@@ -1692,7 +1692,3 @@ const TrashBinModal = showTrashBin ? (
 {TrashBinModal}
 
 export default NoteEaseMainContainer;
-
-// The previous code for export/import & Trash Modal was mistakenly located outside of the main component.
-// All handlers, state, and render logic for export/import/trash must be inside NoteEaseMainContainer for access to React state.
-
