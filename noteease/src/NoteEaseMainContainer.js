@@ -1,6 +1,55 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import NoteEditorWithUndoRedo from './NoteEditorWithUndoRedo';
 
+// Hook for swipe detection on note cards (left/right)
+function useSwipe(ref, { onSwipeLeft, onSwipeRight, minSwipe = 50 }) {
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    let startX = null;
+    let startY = null;
+    let isTouch = false;
+    let moved = false;
+
+    function onTouchStart(e) {
+      isTouch = true;
+      if (e.touches && e.touches.length === 1) {
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+        moved = false;
+      }
+    }
+    function onTouchMove(e) {
+      if (!isTouch || startX === null || startY === null) return;
+      const dx = e.touches[0].clientX - startX;
+      const dy = e.touches[0].clientY - startY;
+      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 7) {
+        moved = true;
+        e.preventDefault();
+      }
+    }
+    function onTouchEnd(e) {
+      if (!isTouch || startX === null || startY === null) return;
+      const endX = (e.changedTouches && e.changedTouches[0].clientX) || 0;
+      const dx = endX - startX;
+      if (Math.abs(dx) > minSwipe) {
+        if (dx < 0 && onSwipeLeft) onSwipeLeft();
+        else if (dx > 0 && onSwipeRight) onSwipeRight();
+      }
+      isTouch = false; startX = null; startY = null; moved = false;
+    }
+
+    el.addEventListener("touchstart", onTouchStart, { passive: false });
+    el.addEventListener("touchmove", onTouchMove, { passive: false });
+    el.addEventListener("touchend", onTouchEnd);
+    return () => {
+      el.removeEventListener("touchstart", onTouchStart);
+      el.removeEventListener("touchmove", onTouchMove);
+      el.removeEventListener("touchend", onTouchEnd);
+    };
+  }, [ref, onSwipeLeft, onSwipeRight, minSwipe]);
+}
+
 /**
  * Theme options for UI: Light, Dark, Sepia, High Contrast
  */
