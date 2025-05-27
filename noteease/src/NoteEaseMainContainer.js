@@ -317,88 +317,202 @@ function NoteEaseMainContainer() {
             margin: '0.3em 0 0 0',
             padding: 0
           }}>
-            {filteredNotes.length === 0 && (
+            {filteredNotes.filter(n => !n.trashed && !n.archived).length === 0 &&
+              filteredNotes.filter(n => !n.trashed && n.archived).length === 0 && (
               <li style={{ padding: '1.5em 0', textAlign: 'center', color: `${theme.text}88` }}>
                 No notes found.
               </li>
             )}
-            {/* 
-                Notepad lines are 34px cycles, so set each card height to match a multiple of 34px.
-                Space between cards: 32px height, with margin to match the 2px brown notepad line.
-            */}
-            {filteredNotes.map(note => (
+            {/* Sort notes: Pinned (not archived/trashed) on top, then others */}
+            {filteredNotes
+              .filter(n => !n.trashed && !n.archived)
+              .sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0))
+              .map(note => (
               <li key={note.id}
-                onClick={() => editNote(note)}
                 tabIndex={0}
+                // Card outer UI change: horizontal flex for controls + content
                 style={{
-                  background: 'none',
-                  // Height = 68px (2 lines) to ensure alignment with lines (34px per line on background)
-                  minHeight: 68,
-                  maxHeight: 102,
-                  lineHeight: '34px',
-                  margin: '0 0 0.5px 0', // 0.5px to exactly match the 1px line separation
-                  marginBottom: '6px',
-                  padding: '0 0.7em 0 1.1em',
+                  background: note.color || (selectedNote && selectedNote.id === note.id)
+                    ? (note.color || `${theme.accentBrown}18`)
+                    : 'none',
+                  minHeight: 72,
+                  marginBottom: '10px',
                   display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
+                  alignItems: 'stretch',
+                  justifyContent: 'space-between',
                   borderRadius: 9,
-                  // Left border brown accent (notebook spiral feel)
                   borderLeft: `6px solid ${theme.accentBrown}`,
                   borderBottom: `2px solid ${theme.accentBrownLight}`,
-                  boxShadow: '0px 2.5px 0px 0px #61421c13',
-                  cursor: 'pointer',
+                  boxShadow: note.pinned
+                    ? '0px 5px 15px #e6c99e38'
+                    : '0px 2.5px 0px 0px #61421c13',
                   position: 'relative',
-                  outline: 'none',
-                  transition: 'background 0.11s, box-shadow 0.11s',
-                  background: (selectedNote && selectedNote.id === note.id)
-                    ? `${theme.accentBrown}18` : 'none',
+                  outline: selectedNote && selectedNote.id === note.id ? `2px solid ${theme.primary}` : 'none',
+                  cursor: 'pointer',
+                  transition: 'all 0.11s',
+                  padding: 0
                 }}
-                onKeyPress={e => e.key === 'Enter' && editNote(note)}
               >
-                {/* Title with brown accent */}
+                {/* Left controls: Pin, Favorite, Color */}
                 <div style={{
-                  fontWeight: 800,
-                  fontSize: 18,
-                  fontFamily: "'Marker Felt', 'Noteworthy', 'Inter', sans-serif",
-                  color: theme.accentBrown,
-                  letterSpacing: '0.05em',
-                  lineHeight: '34px',
-                  textShadow: `0px 1px 0px ${theme.accentBrownLight}22`
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                  padding: '0 7px 0 4px', gap: 3, minWidth: 30
                 }}>
-                  {note.title}
-                </div>
-                <div style={{
-                  fontSize: 14,
-                  color: `${theme.text}ac`,
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  marginTop: '-11px',
-                  letterSpacing: 0.01,
-                }}>
-                  {note.content.replace(/\n/g, ' ').slice(0, 78)}{note.content.length > 78 ? '…' : ''}
-                </div>
-                <div style={{ display: 'flex', gap: 8, marginTop: 1 }}>
-                  {note.tags && note.tags.map((tag, idx) => (
-                    <span key={idx}
+                  <button title="Pin/unpin" tabIndex={-1} style={{
+                    background: 'none', border: 'none', cursor: 'pointer', fontSize: 18, color: note.pinned ? theme.primary : theme.accentBrownLight
+                  }} onClick={e => { e.stopPropagation(); togglePin(note.id); }}>
+                    {note.pinned ? '📌' : '📍'}
+                  </button>
+                  <button title="Favorite" tabIndex={-1} style={{
+                    background: 'none', border: 'none', cursor: 'pointer', fontSize: 18, color: note.favorite ? '#ffb934' : '#ad9f7a'
+                  }} onClick={e => { e.stopPropagation(); toggleFavorite(note.id); }}>
+                    {note.favorite ? '★' : '☆'}
+                  </button>
+                  <div style={{ height: 8 }}></div>
+                  {/* Color picker dropdown */}
+                  <div style={{ position: 'relative' }}>
+                    <button
+                      title="Color"
+                      tabIndex={-1}
                       style={{
-                        fontSize: 13,
-                        padding: '3px 11px 1.5px 11px',
-                        borderRadius: 7,
-                        fontWeight: 500,
-                        background: `${getTagColor(tag)}cc`,
-                        color: isDark ? theme.accentBrown : '#3a2617',
-                        border: `1px solid ${theme.accentBrownLight}44`,
-                        boxShadow: '0px 1px 6px #ae917a19',
-                        letterSpacing: 0.01
+                        width: 18, height: 18, borderRadius: '50%', border: `2px solid ${theme.accentBrownLight}`,
+                        background: note.color, cursor: 'pointer', outline: 'none', marginTop: 2, marginBottom: 2
+                      }}
+                      onClick={e => {
+                        e.stopPropagation();
+                        setNotes(notes =>
+                          notes.map(n =>
+                            n.id === note.id
+                              ? ({ ...n, colorPaletteOpen: !n.colorPaletteOpen })
+                              : ({ ...n, colorPaletteOpen: false })
+                          )
+                        );
+                      }}
+                    />
+                    {note.colorPaletteOpen && (
+                      <div style={{
+                        position: 'absolute', left: 26, top: -10, background: theme.paper, border: `1.7px solid ${theme.accentBrownLight}88`, borderRadius: 7, zIndex: 20,
+                        boxShadow: '0px 2.5px 12px #6d48211a', padding: 4, display: 'flex', gap: 6
                       }}>
-                      {tag}
-                    </span>
-                  ))}
+                        {colorOptions.map(col => (
+                          <button key={col}
+                            onClick={e => { e.stopPropagation(); changeColor(note.id, col); setNotes(ns => ns.map(n => n.id === note.id ? { ...n, colorPaletteOpen: false } : n)); }}
+                            style={{ background: col, border: '1.3px solid #8888', width: 18, height: 18, borderRadius: '50%', cursor: 'pointer' }}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                {/* Center – Main note info and tags; click to open edit */}
+                <div onClick={() => editNote(note)} style={{
+                  flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', cursor: 'pointer', padding: '8px 4px 6px 6px'
+                }}>
+                  <div style={{
+                    fontWeight: 800,
+                    fontSize: 18,
+                    fontFamily: "'Marker Felt', 'Noteworthy', 'Inter', sans-serif",
+                    color: theme.accentBrown,
+                    letterSpacing: '0.05em',
+                    lineHeight: '21px', textShadow: `0px 1px 0px ${theme.accentBrownLight}22`
+                  }}>
+                    {note.title}
+                    {note.checklist && <span title="Checklist" style={{ marginLeft: 6, fontSize: 17, color: '#68aa4a' }}>☑️</span>}
+                    {note.reminder && <span title="Reminder Set" style={{ marginLeft: 2, fontSize: 17, color: '#edb419' }}>⏰</span>}
+                  </div>
+                  <div style={{
+                    fontSize: 14,
+                    color: `${theme.text}ac`,
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    marginTop: '-2px',
+                    letterSpacing: 0.01,
+                  }}>
+                    {note.content.replace(/\n/g, ' ').slice(0, 78)}{note.content.length > 78 ? '…' : ''}
+                  </div>
+                  <div style={{ display: 'flex', gap: 8, marginTop: 1 }}>
+                    {note.tags && note.tags.map((tag, idx) => (
+                      <span key={idx}
+                        style={{
+                          fontSize: 13,
+                          padding: '3px 11px 1.5px 11px',
+                          borderRadius: 7,
+                          fontWeight: 500,
+                          background: `${getTagColor(tag)}cc`,
+                          color: isDark ? theme.accentBrown : '#3a2617',
+                          border: `1px solid ${theme.accentBrownLight}44`,
+                          boxShadow: '0px 1px 6px #ae917a19',
+                          letterSpacing: 0.01
+                        }}>
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                {/* Right controls: Archive/restore, Trash/delete, Checklist, Reminder */}
+                <div style={{
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                  padding: '0 6px 0 5px', gap: 3, minWidth: 35
+                }}>
+                  <button title={note.archived ? "Restore from Archive" : "Archive"}
+                    tabIndex={-1}
+                    style={{
+                      background: 'none', border: 'none', cursor: 'pointer', fontSize: 17, color: '#B07845'
+                    }}
+                    onClick={e => { e.stopPropagation(); toggleArchive(note.id); }}>
+                    {note.archived ? '🗂️' : '🗄️'}
+                  </button>
+                  <button title="Trash" tabIndex={-1} style={{
+                    background: 'none', border: 'none', cursor: 'pointer', fontSize: 17, color: '#fe4304'
+                  }} onClick={e => { e.stopPropagation(); trashNote(note.id); }}>
+                    🗑️
+                  </button>
+                  <div style={{ height: 8 }}></div>
+                  <button title="Toggle Checklist" tabIndex={-1} style={{
+                    background: 'none', border: 'none', cursor: 'pointer', fontSize: 17, color: note.checklist ? '#68aa4a' : '#B07845'
+                  }} onClick={e => { e.stopPropagation(); changeChecklist(note.id); }}>
+                    {note.checklist ? '☑️' : '☐'}
+                  </button>
+                  <button title="Toggle Reminder" tabIndex={-1} style={{
+                    background: 'none', border: 'none', cursor: 'pointer', fontSize: 17, color: note.reminder ? '#edb419' : '#b8ae6b'
+                  }} onClick={e => { e.stopPropagation(); toggleReminder(note.id); }}>
+                    ⏰
+                  </button>
                 </div>
               </li>
             ))}
+            {/* Render archived notes in a section below if present */}
+            {filteredNotes.filter(n => !n.trashed && n.archived).length > 0 && (
+              <li style={{ margin: '20px 0 2px 8px', color: theme.accentBrownLight, fontSize: 15, opacity: 0.88 }}>Archived</li>
+            )}
+            {filteredNotes
+              .filter(n => !n.trashed && n.archived)
+              .map(note => (
+                <li key={note.id}
+                  style={{
+                    background: note.color || `${theme.accentBrown}14`,
+                    minHeight: 58,
+                    marginBottom: 7,
+                    display: 'flex',
+                    alignItems: 'center',
+                    borderRadius: 7,
+                    borderLeft: `4px dashed ${theme.accentBrown}`,
+                    borderBottom: `1.5px solid ${theme.accentBrownLight}`,
+                    padding: '2px 7px'
+                  }}
+                >
+                  <div style={{ flex: 1, opacity: 0.64, fontSize: 13, padding: '4px 0 3px 0' }}>{note.title}</div>
+                  <button
+                    title="Restore"
+                    style={{
+                      background: 'none', border: 'none', cursor: 'pointer', color: '#3a2617', fontSize: 15, marginLeft: 5
+                    }}
+                    onClick={e => { e.stopPropagation(); restoreNote(note.id); }}>
+                    ♻️
+                  </button>
+                </li>
+              ))}
           </ul>
 
           {/* Floating Action Button */}
@@ -489,6 +603,51 @@ function NoteEaseMainContainer() {
                 padding: '0.35em 0'
               }}
             />
+            <div style={{display:'flex',gap:10,marginBottom:8}}>
+              <span style={{fontSize:13,color:theme.accentBrownLight,marginRight:4,marginTop:5}}>Color:</span>
+              <div style={{display:'flex',gap:6,alignItems:'center'}}>
+                {colorOptions.map(col=>(
+                  <button key={col}
+                    style={{
+                      background: col,
+                      border: editBuffer.color===col?`2.3px solid ${theme.primary}`:'1.5px solid #8887',
+                      width: 20, height: 20, borderRadius: '50%', cursor: 'pointer'
+                    }}
+                    onClick={e=>setEditBuffer(b=>({...b, color: col}))}
+                  />
+                ))}
+              </div>
+              <span style={{fontSize:13,color:theme.accentBrownLight,marginLeft:18,marginTop:5}}>Checklist:</span>
+              <button style={{
+                padding:'1.5px 10px',
+                fontSize:16,
+                border:`1.7px solid ${theme.accentBrownLight}`,
+                borderRadius:7,
+                background:editBuffer.checklist?'#e8fbd2':'#fffbe6',
+                color: editBuffer.checklist?'#68aa4a':theme.accentBrownLight,
+                fontWeight:600,
+                cursor:'pointer',
+                marginLeft:2
+              }}
+              onClick={()=>setEditBuffer(b=>({...b, checklist:!b.checklist}))}>
+                {editBuffer.checklist?'☑️':'☐'}
+              </button>
+              <span style={{fontSize:13,color:theme.accentBrownLight,marginLeft:18,marginTop:5}}>Reminder:</span>
+              <button style={{
+                padding:'2px 10px',
+                fontSize:15.5,
+                border:`1.7px solid ${theme.accentBrownLight}`,
+                borderRadius:7,
+                background:editBuffer.reminder?'#f0e2a9':'#fffbe6',
+                color: editBuffer.reminder?'#edb419':theme.accentBrownLight,
+                fontWeight:600,
+                cursor:'pointer',
+                marginLeft:2
+              }}
+              onClick={()=>setEditBuffer(b=>({...b, reminder: b.reminder?null:new Date(Date.now()+3600*1000).toISOString()}))}>
+                ⏰
+              </button>
+            </div>
             <textarea
               placeholder="Write your notes here…"
               value={editBuffer.content}
