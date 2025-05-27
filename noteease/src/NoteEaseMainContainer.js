@@ -74,10 +74,16 @@ function NoteEaseMainContainer() {
   const [search, setSearch] = useState('');
   const [selectedNote, setSelectedNote] = useState(null);
   const [editBuffer, setEditBuffer] = useState({ title: '', content: '', tags: [] });
-  const [isDark, setIsDark] = useState(false);
+  // Theme modes: 'light', 'dark', 'sepia', 'contrast'
+  const [uiTheme, setUITheme] = useState('light');
   const [showEditor, setShowEditor] = useState(false);
 
-  // Add brown color accent for notebook feel
+  // Sorting/filtering control state
+  const [sortBy, setSortBy] = useState('date-desc'); // 'date-desc', 'date-asc', 'title-asc', 'title-desc', 'tag-az'
+  const [filterTag, setFilterTag] = useState('all');
+  const [filterShow, setFilterShow] = useState('all'); // 'all', 'pinned', 'favorite', 'archived'
+  
+  // Similar theme palette extended for sepia/high-contrast
   const THEME = useMemo(() => ({
     light: {
       background: '#FDF6E3',
@@ -86,7 +92,6 @@ function NoteEaseMainContainer() {
       paper: '#FFFBDF',
       border: '#DED09E',
       primary: '#4A90E2',
-      // Brown accent: notebook style
       accentBrown: '#8B5C2A',
       accentBrownLight: '#B07845',
       text: '#42290d',
@@ -111,10 +116,41 @@ function NoteEaseMainContainer() {
       fabFg: '#251e1a',
       searchBg: '#262318',
       searchBorder: '#413a22'
+    },
+    sepia: {
+      background: '#f4ecd8',
+      paperEdge: '#e4d6b3',
+      line: '#ede1c0',
+      paper: '#f7f5ef',
+      border: '#dfc991',
+      primary: '#ab8652',
+      accentBrown: '#7F5A36',
+      accentBrownLight: '#cbae88',
+      text: '#473816',
+      tagColors: ['#bf7b26', '#c7a760', '#b0906d', '#bd5633', '#c7b28b', '#ea8c41', '#efd8bd'],
+      fabBg: '#b5884a',
+      fabFg: '#fff',
+      searchBg: '#f6eed6',
+      searchBorder: '#dfc991'
+    },
+    contrast: {
+      background: '#fff700',
+      paperEdge: '#fff730',
+      line: '#000000',
+      paper: '#fff',
+      border: '#000',
+      primary: '#000',
+      accentBrown: '#000',
+      accentBrownLight: '#111',
+      text: '#000',
+      tagColors: ['#F90', '#00F', '#0B0', '#D00', '#444', '#AAA', '#F70'],
+      fabBg: '#000',
+      fabFg: '#FFF700',
+      searchBg: '#FFF700',
+      searchBorder: '#000'
     }
   }), []);
-  const theme = isDark ? THEME.dark : THEME.light;
-
+  const theme = THEME[uiTheme] || THEME.light;
   // Utility for selecting tag color
   function getTagColor(tag) {
     // Pick a color based on string hash

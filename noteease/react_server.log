@@ -35,3 +35,40 @@ src/NoteEaseMainContainer.js
   Line 146:9:  'categoryOptions' is assigned a value but never used  no-unused-vars
 
 webpack compiled with 1 warning
+Compiling...
+Failed to compile.
+
+[eslint] 
+src/NoteEaseMainContainer.js
+  Line 290:5:   'setIsDark' is not defined  no-undef
+  Line 362:49:  'isDark' is not defined     no-undef
+  Line 379:16:  'isDark' is not defined     no-undef
+  Line 531:34:  'isDark' is not defined     no-undef
+  Line 747:23:  'isDark' is not defined     no-undef
+  Line 768:30:  'isDark' is not defined     no-undef
+
+Search for the keywords to learn more about each error.
+WARNING in [eslint] 
+src/NoteEaseMainContainer.js
+  Line 7:7:    'THEME_PRESETS' is assigned a value but never used    no-unused-vars
+  Line 78:19:  'setUITheme' is assigned a value but never used       no-unused-vars
+  Line 82:10:  'sortBy' is assigned a value but never used           no-unused-vars
+  Line 82:18:  'setSortBy' is assigned a value but never used        no-unused-vars
+  Line 83:10:  'filterTag' is assigned a value but never used        no-unused-vars
+  Line 83:21:  'setFilterTag' is assigned a value but never used     no-unused-vars
+  Line 84:10:  'filterShow' is assigned a value but never used       no-unused-vars
+  Line 84:22:  'setFilterShow' is assigned a value but never used    no-unused-vars
+  Line 182:9:  'categoryOptions' is assigned a value but never used  no-unused-vars
+
+ERROR in [eslint] 
+src/NoteEaseMainContainer.js
+  Line 290:5:   'setIsDark' is not defined  no-undef
+  Line 362:49:  'isDark' is not defined     no-undef
+  Line 379:16:  'isDark' is not defined     no-undef
+  Line 531:34:  'isDark' is not defined     no-undef
+  Line 747:23:  'isDark' is not defined     no-undef
+  Line 768:30:  'isDark' is not defined     no-undef
+
+Search for the keywords to learn more about each error.
+
+webpack compiled with 1 error and 1 warning
