@@ -371,3 +371,76 @@ src/NoteEaseMainContainer.js
   Line 1285:15:  Parsing error: Missing semicolon. (1285:15)
 
 webpack compiled with 2 errors
+Compiling...
+Failed to compile.
+
+[eslint] 
+src/NoteEaseMainContainer.js
+Syntax error: Missing semicolon. (1285:15) (1285:15)
+ERROR in ./src/NoteEaseMainContainer.js
+Module build failed (from ./node_modules/babel-loader/lib/index.js):
+SyntaxError: /home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/src/NoteEaseMainContainer.js: Missing semicolon. (1285:15)
+
+  1283 |                   </div>
+  1284 |                 </li>
+> 1285 |               ))}
+       |                ^
+  1286 |           </ul>
+  1287 |           {/* Floating Action Button */}
+  1288 |           <button
+    at constructor (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:360:19)
+    at FlowParserMixin.raise (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:3327:19)
+    at FlowParserMixin.semicolon (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:3653:10)
+    at FlowParserMixin.parseReturnStatement (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:12787:12)
+    at FlowParserMixin.parseStatementContent (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:12437:21)
+    at FlowParserMixin.parseStatementLike (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:12406:17)
+    at FlowParserMixin.parseStatementLike (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:5140:24)
+    at FlowParserMixin.parseStatementListItem (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:12386:17)
+    at FlowParserMixin.parseBlockOrModuleBlockBody (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:12960:61)
+    at FlowParserMixin.parseBlockBody (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:12953:10)
+    at FlowParserMixin.parseBlock (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:12941:10)
+    at FlowParserMixin.parseFunctionBody (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:11783:24)
+    at /home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:5114:63
+    at FlowParserMixin.forwardNoArrowParamsConversionAt (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:5290:16)
+    at FlowParserMixin.parseFunctionBody (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:5114:12)
+    at FlowParserMixin.parseArrowExpression (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:11758:10)
+    at FlowParserMixin.parseExprAtom (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:11122:25)
+    at FlowParserMixin.parseExprAtom (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:6937:20)
+    at FlowParserMixin.parseExprSubscripts (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:10758:23)
+    at FlowParserMixin.parseUpdate (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:10743:21)
+    at FlowParserMixin.parseMaybeUnary (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:10723:23)
+    at FlowParserMixin.parseMaybeUnaryOrPrivate (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:10576:61)
+    at FlowParserMixin.parseExprOps (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:10581:23)
+    at FlowParserMixin.parseMaybeConditional (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:10558:23)
+    at FlowParserMixin.parseMaybeAssign (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:10521:21)
+    at FlowParserMixin.parseMaybeAssign (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:5773:18)
+    at /home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:10491:39
+    at FlowParserMixin.allowInAnd (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:12100:12)
+    at FlowParserMixin.parseMaybeAssignAllowIn (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:10491:17)
+    at FlowParserMixin.parseExprListItem (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:11858:18)
+    at FlowParserMixin.parseCallExpressionArguments (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:10927:22)
+    at FlowParserMixin.parseCoverCallAndAsyncArrowHead (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:10861:29)
+    at FlowParserMixin.parseSubscript (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:10798:19)
+    at FlowParserMixin.parseSubscript (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:5874:18)
+    at FlowParserMixin.parseSubscripts (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:10771:19)
+    at FlowParserMixin.parseSubscripts (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:5840:18)
+    at FlowParserMixin.parseExprSubscripts (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:10762:17)
+    at FlowParserMixin.parseUpdate (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:10743:21)
+    at FlowParserMixin.parseMaybeUnary (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:10723:23)
+    at FlowParserMixin.parseMaybeUnaryOrPrivate (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:10576:61)
+    at FlowParserMixin.parseExprOps (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:10581:23)
+    at FlowParserMixin.parseMaybeConditional (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:10558:23)
+    at FlowParserMixin.parseMaybeAssign (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:10521:21)
+    at FlowParserMixin.parseMaybeAssign (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:5773:18)
+    at FlowParserMixin.parseExpressionBase (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:10475:23)
+    at /home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:10471:39
+    at FlowParserMixin.allowInAnd (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:12100:12)
+    at FlowParserMixin.parseExpression (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:10471:17)
+    at FlowParserMixin.jsxParseExpressionContainer (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:6805:31)
+    at FlowParserMixin.jsxParseElementAt (/home/kavia/workspace/code-generation/noteease-16571-cdbf7209/noteease/node_modules/@babel/parser/lib/index.js:6884:36)
+
+ERROR in [eslint] 
+src/NoteEaseMainContainer.js
+  Line 1285:15:  Parsing error: Missing semicolon. (1285:15)
+
+webpack compiled with 2 errors
