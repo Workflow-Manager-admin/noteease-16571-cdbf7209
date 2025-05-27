@@ -675,115 +675,18 @@ function NoteEaseMainContainer() {
               </button>
             </div>
             {/* Rich Text Editor for Notes */}
-            <div
-              style={{
-                border: `1.7px solid ${theme.accentBrownLight}`,
-                borderRadius: 7,
-                width: '100%',
-                marginBottom: 10,
-                background: isDark ? theme.paper : '#fff8',
-                boxShadow: '0 3.5px 0 #cbb37f15',
-                padding: 0,
-              }}
-            >
-              {/* Lightweight formatting toolbar */}
-              <div style={{
-                display: 'flex',
-                gap: 8,
-                borderBottom: `1px solid ${theme.accentBrownLight}33`,
-                background: isDark ? theme.paperEdge : '#fff5da',
-                borderTopLeftRadius: 7,
-                borderTopRightRadius: 7,
-                padding: '3px 7px',
-                fontSize: 16,
-                userSelect: 'none'
-              }}>
-                <button
-                  type="button"
-                  aria-label="Bold"
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: theme.accentBrown,
-                    fontWeight: 800,
-                    fontSize: 18,
-                    cursor: 'pointer',
-                    padding: '2px 8px',
-                    borderRadius: 5
-                  }}
-                  onMouseDown={e => { e.preventDefault(); document.execCommand?.('bold', false, null); }}
-                ><b>B</b></button>
-                <button
-                  type="button"
-                  aria-label="Italic"
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: theme.accentBrownLight,
-                    fontWeight: 600,
-                    fontSize: 17,
-                    cursor: 'pointer',
-                    padding: '2px 8px',
-                    borderRadius: 5
-                  }}
-                  onMouseDown={e => { e.preventDefault(); document.execCommand?.('italic', false, null); }}
-                ><i>I</i></button>
-                <button
-                  type="button"
-                  aria-label="Bulleted list"
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: '#ba944b',
-                    fontWeight: 700,
-                    fontSize: 18,
-                    cursor: 'pointer',
-                    padding: '2px 8px',
-                    borderRadius: 5
-                  }}
-                  onMouseDown={e => { e.preventDefault(); document.execCommand?.('insertUnorderedList', false, null); }}
-                >• List</button>
-              </div>
-              <div
-                contentEditable
-                suppressContentEditableWarning
-                role="textbox"
-                aria-label="Note content editor"
-                style={{
-                  fontFamily: "'Noteworthy', 'Inter', 'Roboto', sans-serif",
-                  fontSize: 16,
-                  color: theme.text,
-                  border: 'none',
-                  outline: 'none',
-                  minHeight: 90,
-                  padding: '0.8em',
-                  borderRadius: '0 0 7px 7px',
-                  background: 'transparent',
-                  resize: 'vertical',
-                  width: '100%',
-                  boxSizing: 'border-box',
-                  whiteSpace: 'pre-wrap',
-                  overflowWrap: 'break-word',
-                  margin: 0,
-                  maxHeight: 295,
-                  overflowY: 'auto'
-                }}
-                ref={el => {
-                  if (el && el.innerHTML !== editBuffer.content) {
-                    el.innerHTML = editBuffer.content || '';
-                  }
-                }}
-                onInput={e => setEditBuffer(b => ({ ...b, content: e.currentTarget.innerHTML }))}
-                onBlur={e => {
-                  // Ensure <div> does not empty to <br>
-                  if (e.currentTarget.innerHTML === '<br>') {
-                    setEditBuffer(b => ({ ...b, content: '' }));
-                  }
-                }}
-                spellCheck={true}
-                tabIndex={0}
-              />
-            </div>
+            {/* 
+              --- BEGIN UNDO/REDO IMPLEMENTATION ---
+            */}
+            <NoteEditorWithUndoRedo 
+              editBuffer={editBuffer}
+              setEditBuffer={setEditBuffer}
+              theme={theme}
+              isDark={isDark}
+            />
+            {/* 
+              --- END UNDO/REDO IMPLEMENTATION ---
+            */}
             {/* Tag adder */}
             <div style={{ marginBottom: 8 }}>
               <div style={{
