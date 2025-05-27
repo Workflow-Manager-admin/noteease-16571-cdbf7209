@@ -556,3 +556,78 @@ src/NoteEaseMainContainer.js
 Search for the keywords to learn more about each error.
 
 webpack compiled with 1 error and 1 warning
+Compiling...
+Failed to compile.
+
+[eslint] 
+src/NoteEaseMainContainer.js
+  Line 352:21:  'theme' is not defined            no-undef
+  Line 353:16:  'theme' is not defined            no-undef
+  Line 358:8:   'TrashBinModal' is not defined    no-undef
+  Line 363:23:  'tornEdge' is not defined         no-undef
+  Line 371:39:  'theme' is not defined            no-undef
+  Line 374:21:  'theme' is not defined            no-undef
+  Line 382:23:  'theme' is not defined            no-undef
+  Line 383:41:  'theme' is not defined            no-undef
+  Line 390:25:  'linedPaperBg' is not defined     no-undef
+  Line 395:36:  'theme' is not defined            no-undef
+  Line 404:14:  'filteredNotes' is not defined    no-undef
+  Line 405:79:  'theme' is not defined            no-undef
+  Line 409:14:  'filteredNotes' is not defined    no-undef
+  Line 413:29:  'selectedNote' is not defined     no-undef
+  Line 413:45:  'selectedNote' is not defined     no-undef
+  Line 414:24:  'theme' is not defined            no-undef
+  Line 415:26:  'uiTheme' is not defined          no-undef
+  Line 417:30:  'getTagColor' is not defined      no-undef
+  Line 418:25:  'editNote' is not defined         no-undef
+  Line 419:28:  'togglePin' is not defined        no-undef
+  Line 420:33:  'toggleFavorite' is not defined   no-undef
+  Line 421:32:  'toggleArchive' is not defined    no-undef
+  Line 422:28:  'trashNote' is not defined        no-undef
+  Line 423:30:  'changeColor' is not defined      no-undef
+  Line 424:34:  'changeChecklist' is not defined  no-undef
+  Line 425:33:  'toggleReminder' is not defined   no-undef
+  Line 426:27:  'setNotes' is not defined         no-undef
+
+Search for the keywords to learn more about each error.
+WARNING in [eslint] 
+src/NoteEaseMainContainer.js
+  Line 1:17:  'useState' is defined but never used                no-unused-vars
+  Line 1:27:  'useMemo' is defined but never used                 no-unused-vars
+  Line 2:8:   'NoteEditorWithUndoRedo' is defined but never used  no-unused-vars
+  Line 12:9:  'moved' is assigned a value but never used          no-unused-vars
+  Line 56:7:  'THEME_PRESETS' is assigned a value but never used  no-unused-vars
+
+ERROR in [eslint] 
+src/NoteEaseMainContainer.js
+  Line 352:21:  'theme' is not defined            no-undef
+  Line 353:16:  'theme' is not defined            no-undef
+  Line 358:8:   'TrashBinModal' is not defined    no-undef
+  Line 363:23:  'tornEdge' is not defined         no-undef
+  Line 371:39:  'theme' is not defined            no-undef
+  Line 374:21:  'theme' is not defined            no-undef
+  Line 382:23:  'theme' is not defined            no-undef
+  Line 383:41:  'theme' is not defined            no-undef
+  Line 390:25:  'linedPaperBg' is not defined     no-undef
+  Line 395:36:  'theme' is not defined            no-undef
+  Line 404:14:  'filteredNotes' is not defined    no-undef
+  Line 405:79:  'theme' is not defined            no-undef
+  Line 409:14:  'filteredNotes' is not defined    no-undef
+  Line 413:29:  'selectedNote' is not defined     no-undef
+  Line 413:45:  'selectedNote' is not defined     no-undef
+  Line 414:24:  'theme' is not defined            no-undef
+  Line 415:26:  'uiTheme' is not defined          no-undef
+  Line 417:30:  'getTagColor' is not defined      no-undef
+  Line 418:25:  'editNote' is not defined         no-undef
+  Line 419:28:  'togglePin' is not defined        no-undef
+  Line 420:33:  'toggleFavorite' is not defined   no-undef
+  Line 421:32:  'toggleArchive' is not defined    no-undef
+  Line 422:28:  'trashNote' is not defined        no-undef
+  Line 423:30:  'changeColor' is not defined      no-undef
+  Line 424:34:  'changeChecklist' is not defined  no-undef
+  Line 425:33:  'toggleReminder' is not defined   no-undef
+  Line 426:27:  'setNotes' is not defined         no-undef
+
+Search for the keywords to learn more about each error.
+
+webpack compiled with 1 error and 1 warning
