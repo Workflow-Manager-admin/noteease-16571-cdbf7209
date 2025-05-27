@@ -250,60 +250,75 @@ function NoteEaseMainContainer() {
                 No notes found.
               </li>
             )}
+            {/* 
+                Notepad lines are 34px cycles, so set each card height to match a multiple of 34px.
+                Space between cards: 32px height, with margin to match the 2px brown notepad line.
+            */}
             {filteredNotes.map(note => (
               <li key={note.id}
                 onClick={() => editNote(note)}
                 tabIndex={0}
                 style={{
                   background: 'none',
-                  padding: '.75em 0.3em .75em 0.85em',
-                  margin: '.15em 0',
-                  borderRadius: 7,
-                  minHeight: 50,
-                  borderLeft: `5.5px solid ${theme.primary}`,
-                  boxShadow: 'none',
+                  // Height = 68px (2 lines) to ensure alignment with lines (34px per line on background)
+                  minHeight: 68,
+                  maxHeight: 102,
+                  lineHeight: '34px',
+                  margin: '0 0 0.5px 0', // 0.5px to exactly match the 1px line separation
+                  marginBottom: '6px',
+                  padding: '0 0.7em 0 1.1em',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  borderRadius: 9,
+                  // Left border brown accent (notebook spiral feel)
+                  borderLeft: `6px solid ${theme.accentBrown}`,
+                  borderBottom: `2px solid ${theme.accentBrownLight}`,
+                  boxShadow: '0px 2.5px 0px 0px #61421c13',
                   cursor: 'pointer',
                   position: 'relative',
                   outline: 'none',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  transition: 'background 0.11s',
-                  ...(selectedNote && selectedNote.id === note.id
-                    ? { background: `${theme.primary}17` }
-                    : {}),
+                  transition: 'background 0.11s, box-shadow 0.11s',
+                  background: (selectedNote && selectedNote.id === note.id)
+                    ? `${theme.accentBrown}18` : 'none',
                 }}
                 onKeyPress={e => e.key === 'Enter' && editNote(note)}
               >
+                {/* Title with brown accent */}
                 <div style={{
-                  fontWeight: 700,
+                  fontWeight: 800,
                   fontSize: 18,
-                  letterSpacing: 0.2,
                   fontFamily: "'Marker Felt', 'Noteworthy', 'Inter', sans-serif",
-                  color: theme.text
+                  color: theme.accentBrown,
+                  letterSpacing: '0.05em',
+                  lineHeight: '34px',
+                  textShadow: `0px 1px 0px ${theme.accentBrownLight}22`
                 }}>
                   {note.title}
                 </div>
                 <div style={{
                   fontSize: 14,
-                  color: `${theme.text}ab`,
+                  color: `${theme.text}ac`,
                   whiteSpace: 'nowrap',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
-                  marginTop: -2
+                  marginTop: '-11px',
+                  letterSpacing: 0.01,
                 }}>
-                  {note.content.replace(/\n/g, ' ').slice(0, 58)}{note.content.length > 58 ? '…' : ''}
+                  {note.content.replace(/\n/g, ' ').slice(0, 78)}{note.content.length > 78 ? '…' : ''}
                 </div>
-                <div style={{ display: 'flex', gap: 6, marginTop: 4 }}>
+                <div style={{ display: 'flex', gap: 8, marginTop: 1 }}>
                   {note.tags && note.tags.map((tag, idx) => (
                     <span key={idx}
                       style={{
-                        fontSize: 12.5,
-                        padding: '1.5px 8px',
+                        fontSize: 13,
+                        padding: '3px 11px 1.5px 11px',
                         borderRadius: 7,
                         fontWeight: 500,
-                        background: getTagColor(tag),
-                        color: isDark ? '#2c1f09' : '#2b2b2b',
-                        boxShadow: '0px 1px 6px #0001',
+                        background: `${getTagColor(tag)}cc`,
+                        color: isDark ? theme.accentBrown : '#3a2617',
+                        border: `1px solid ${theme.accentBrownLight}44`,
+                        boxShadow: '0px 1px 6px #ae917a19',
                         letterSpacing: 0.01
                       }}>
                       {tag}
