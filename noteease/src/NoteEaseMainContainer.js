@@ -159,7 +159,14 @@ function NoteEaseMainContainer() {
     return theme.tagColors[Math.abs(hash) % theme.tagColors.length];
   }
 
-  // Filtered notes with search applied
+  // All tags for filtering
+  const allTags = useMemo(() => {
+    const tagSet = new Set();
+    notes.forEach(n => (n.tags || []).forEach(t => tagSet.add(t)));
+    return Array.from(tagSet).sort();
+  }, [notes]);
+
+  // Filtering/search logic
   const filteredNotes = useMemo(() => {
     // Helper to extract plain text from HTML for search
     function plain(str) {
@@ -167,13 +174,47 @@ function NoteEaseMainContainer() {
       tmp.innerHTML = str || '';
       return tmp.textContent || tmp.innerText || '';
     }
-    return notes.filter(
+    let res = notes.filter(
       n =>
         (n.title && n.title.toLowerCase().includes(search.toLowerCase()))
         || (n.content && plain(n.content).toLowerCase().includes(search.toLowerCase()))
         || (n.tags && n.tags.some(tag => tag.toLowerCase().includes(search.toLowerCase())))
     );
-  }, [notes, search]);
+    if (filterShow === 'pinned')
+      res = res.filter(n => n.pinned && !n.archived && !n.trashed);
+    else if (filterShow === 'favorite')
+      res = res.filter(n => n.favorite && !n.archived && !n.trashed);
+    else if (filterShow === 'archived')
+      res = res.filter(n => n.archived && !n.trashed);
+    else
+      res = res.filter(n => !n.trashed);
+
+    if (filterTag !== 'all')
+      res = res.filter(n => Array.isArray(n.tags) && n.tags.includes(filterTag));
+
+    // Sorting
+    res = [...res];
+    switch (sortBy) {
+      case 'date-asc':
+        res.sort((a, b) => (a.id || 0) - (b.id || 0));
+        break;
+      case 'date-desc':
+        res.sort((a, b) => (b.id || 0) - (a.id || 0));
+        break;
+      case 'title-asc':
+        res.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+        break;
+      case 'title-desc':
+        res.sort((a, b) => (b.title || '').localeCompare(a.title || ''));
+        break;
+      case 'tag-az':
+        res.sort((a, b) => ((a.tags?.[0] || '').localeCompare(b.tags?.[0] || '')));
+        break;
+      default:
+        break;
+    }
+    return res;
+  }, [notes, search, sortBy, filterTag, filterShow]);
 
   // Custom icon controls: utility variables for colors/categories, emoji-UI mapping.
   const colorOptions = [
@@ -285,9 +326,19 @@ function NoteEaseMainContainer() {
     }));
   }
 
-  // Toggle theme (PUBLIC_INTERFACE)
+  // PUBLIC_INTERFACE
+  // Change full theme
+  function handleThemeChange(e) {
+    setUITheme(e.target.value);
+  }
+  // PUBLIC_INTERFACE
   function toggleTheme() {
-    setIsDark(d => !d);
+    setUITheme((old) =>
+      old === 'light' ? 'dark'
+      : old === 'dark' ? 'light'
+      : old === 'sepia' ? 'contrast'
+      : 'light'
+    );
   }
 
   // Inline CSS for "notepad" skeuomorphic look
