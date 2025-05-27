@@ -4,23 +4,45 @@ import React, { useState, useMemo } from 'react';
 function NoteEaseMainContainer() {
   // Demo state for notes and tags
   const [notes, setNotes] = useState([
+    // Demo data with all feature fields
     {
       id: 1,
       title: "Shopping List",
       content: "Milk\nEggs\nBread\nCheese",
-      tags: ["Personal", "Groceries"]
+      tags: ["Personal", "Groceries"],
+      pinned: true,
+      favorite: true,
+      archived: false,
+      trashed: false,
+      color: "#FFD966",
+      checklist: false,
+      reminder: null
     },
     {
       id: 2,
       title: "Project Ideas",
       content: "1. Build a note app\n2. Learn Italian\n3. Start gym routine",
-      tags: ["Work", "Ideas"]
+      tags: ["Work", "Ideas"],
+      pinned: false,
+      favorite: false,
+      archived: false,
+      trashed: false,
+      color: "#84e7ba",
+      checklist: true,
+      reminder: null
     },
     {
       id: 3,
       title: "Meeting Notes",
       content: "Discussed Q2 targets. Next steps: review budget.",
-      tags: ["Work", "Meetings"]
+      tags: ["Work", "Meetings"],
+      pinned: false,
+      favorite: false,
+      archived: true,
+      trashed: false,
+      color: "#FFD6E0",
+      checklist: false,
+      reminder: null
     }
   ]);
   const [search, setSearch] = useState('');
