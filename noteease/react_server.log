@@ -138,3 +138,27 @@ src/NoteEaseMainContainer.js
 Search for the keywords to learn more about each error.
 
 webpack compiled with 1 error and 1 warning
+Compiling...
+Failed to compile.
+
+[eslint] 
+src/NoteEaseMainContainer.js
+  Line 663:34:  'isDark' is not defined  no-undef
+  Line 879:23:  'isDark' is not defined  no-undef
+  Line 900:30:  'isDark' is not defined  no-undef
+
+Search for the keywords to learn more about each error.
+WARNING in [eslint] 
+src/NoteEaseMainContainer.js
+  Line 223:9:   'categoryOptions' is assigned a value but never used  no-unused-vars
+  Line 335:12:  'toggleTheme' is defined but never used               no-unused-vars
+
+ERROR in [eslint] 
+src/NoteEaseMainContainer.js
+  Line 663:34:  'isDark' is not defined  no-undef
+  Line 879:23:  'isDark' is not defined  no-undef
+  Line 900:30:  'isDark' is not defined  no-undef
+
+Search for the keywords to learn more about each error.
+
+webpack compiled with 1 error and 1 warning

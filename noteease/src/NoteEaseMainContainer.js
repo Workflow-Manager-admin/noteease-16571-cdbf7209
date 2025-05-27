@@ -396,7 +396,8 @@ function NoteEaseMainContainer() {
           borderBottom: `1.5px dashed ${theme.line}`,
           padding: '0.6rem 1.2rem 0.1rem'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {/* UI controls: Search, Theme Switcher, Sort, Filter */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
             <input
               type="text"
               value={search}
@@ -410,25 +411,105 @@ function NoteEaseMainContainer() {
                 borderRadius: 28,
                 background: theme.searchBg,
                 color: theme.text,
-                boxShadow: `inset 0 1.5px 2px ${isDark ? '#14110a33' : '#eed18f16'}`,
+                boxShadow: `inset 0 1.5px 2px #eed18f16`,
                 outline: 'none',
                 fontFamily: "'Marker Felt', 'Noteworthy', 'Inter', sans-serif"
               }}
             />
-            <button
-              aria-label="Toggle theme"
-              onClick={toggleTheme}
+            {/* Theme Switcher */}
+            <select
+              aria-label="Theme switcher"
+              value={uiTheme}
+              onChange={handleThemeChange}
               style={{
-                border: 'none',
-                background: 'none',
-                marginLeft: 6,
-                cursor: 'pointer',
-                fontSize: 24,
+                padding: '4px 7px 4px 6px',
+                fontWeight: 500,
+                fontSize: 17,
+                background: theme.paper,
                 color: theme.primary,
-                padding: 2
-              }}>
-              {isDark ? '🌚' : '🌞'}
-            </button>
+                border: `1.1px solid ${theme.primary}52`,
+                borderRadius: 10,
+                minWidth: 36,
+                cursor: 'pointer',
+                transition: 'background 0.18s',
+                marginLeft: 6
+              }}
+            >
+              {THEME_PRESETS.map(opt => (
+                <option value={opt.id} key={opt.id}>{opt.emoji + " " + opt.name}</option>
+              ))}
+            </select>
+          </div>
+          {/* Sorting and Filtering controls */}
+          <div style={{
+            display: 'flex', flexWrap: 'wrap', gap: 9, marginBottom: 2, alignItems: 'center', justifyContent: 'space-between'
+          }}>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <span style={{ fontSize: 13.6, color: theme.accentBrownLight, minWidth: 37 }}>Sort:</span>
+              <select
+                value={sortBy}
+                aria-label="Sort notes by"
+                onChange={e => setSortBy(e.target.value)}
+                style={{
+                  fontSize: 15.5,
+                  borderRadius: 24,
+                  border: `1px solid ${theme.accentBrownLight}22`,
+                  padding: '1.5px 7px',
+                  background: theme.paper,
+                  color: theme.text,
+                  marginRight: 4
+                }}
+              >
+                <option value="date-desc">Newest</option>
+                <option value="date-asc">Oldest</option>
+                <option value="title-asc">Title A-Z</option>
+                <option value="title-desc">Title Z-A</option>
+                <option value="tag-az">Tag A-Z</option>
+              </select>
+            </div>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <span style={{ fontSize: 13.6, color: theme.accentBrownLight, minWidth: 36 }}>Tag:</span>
+              <select
+                value={filterTag}
+                aria-label="Filter by tag"
+                onChange={e => setFilterTag(e.target.value)}
+                style={{
+                  fontSize: 14.5,
+                  borderRadius: 24,
+                  border: `1px solid ${theme.accentBrownLight}22`,
+                  padding: '1.5px 7px',
+                  background: theme.paper,
+                  color: theme.text,
+                  marginRight: 4
+                }}
+              >
+                <option value="all">All</option>
+                {allTags.map(tag => (
+                  <option key={tag} value={tag}>{tag}</option>
+                ))}
+              </select>
+            </div>
+            <div style={{ display: 'flex', gap: 7, alignItems: 'center', minWidth: 68 }}>
+              <span style={{ fontSize: 13.6, color: theme.accentBrownLight, minWidth: 40 }}>Show:</span>
+              <select
+                value={filterShow}
+                aria-label="Show notes type"
+                onChange={e => setFilterShow(e.target.value)}
+                style={{
+                  fontSize: 14.5,
+                  borderRadius: 24,
+                  border: `1px solid ${theme.accentBrownLight}22`,
+                  padding: '1.5px 7px',
+                  background: theme.paper,
+                  color: theme.text,
+                }}
+              >
+                <option value="all">All</option>
+                <option value="pinned">Pinned</option>
+                <option value="favorite">Favorite</option>
+                <option value="archived">Archived</option>
+              </select>
+            </div>
           </div>
         </div>
         <div
