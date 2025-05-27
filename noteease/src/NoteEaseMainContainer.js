@@ -29,6 +29,7 @@ function NoteEaseMainContainer() {
   const [isDark, setIsDark] = useState(false);
   const [showEditor, setShowEditor] = useState(false);
 
+  // Add brown color accent for notebook feel
   const THEME = useMemo(() => ({
     light: {
       background: '#FDF6E3',
@@ -37,6 +38,9 @@ function NoteEaseMainContainer() {
       paper: '#FFFBDF',
       border: '#DED09E',
       primary: '#4A90E2',
+      // Brown accent: notebook style
+      accentBrown: '#8B5C2A',
+      accentBrownLight: '#B07845',
       text: '#42290d',
       tagColors: ['#F5A623', '#4A90E2', '#BAE15A', '#F86C6B', '#8447FF', '#D3A7F6', '#FFD766'],
       fabBg: '#F5A623',
@@ -51,6 +55,8 @@ function NoteEaseMainContainer() {
       paper: '#262318',
       border: '#413a22',
       primary: '#4A90E2',
+      accentBrown: '#c19e63',
+      accentBrownLight: '#a78551',
       text: '#FFEDBD',
       tagColors: ['#F5A623', '#4A90E2', '#7DEB80', '#FF766C', '#957AFF', '#E6C7F7', '#FFE073'],
       fabBg: '#F5A623',
