@@ -1167,7 +1167,15 @@ function NoteEaseMainContainer() {
                   </div>
                   {/* Center – Main note info and tags; click to open edit */}
                   <div onClick={() => editNote(note)} style={{
-                    flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', cursor: 'pointer', padding: '8px 4px 6px 6px'
+                    flex: 1,
+                    minWidth: 0,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    padding: window.innerWidth < 700 ? '14px 8px 12px 12px' : '8px 4px 6px 6px',
+                    minHeight: window.innerWidth < 700 ? 94 : undefined,
+                    fontSize: window.innerWidth < 700 ? 17 : undefined
                   }}>
                     <div style={{
                       fontWeight: 800,
