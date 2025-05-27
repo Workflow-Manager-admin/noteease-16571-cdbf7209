@@ -459,8 +459,80 @@ function NoteEaseMainContainer() {
           borderBottom: `1.5px dashed ${theme.line}`,
           padding: '0.6rem 1.2rem 0.1rem'
         }}>
-          {/* UI controls: Search, Theme Switcher, Sort, Filter */}
+          {/* UI controls: Search, Theme Switcher, Export/Import, TrashBin */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+            {/* Trash Bin button */}
+            <button
+              title="View Trash Bin"
+              aria-label="Open Trash Bin"
+              onClick={() => setShowTrashBin(true)}
+              style={{
+                background: 'none',
+                border: `2px solid ${theme.accentBrownLight}`,
+                borderRadius: 10,
+                fontSize: 17,
+                color: '#fe4304',
+                fontWeight: 700,
+                padding: '4px 10px',
+                marginRight: 3,
+                cursor: 'pointer',
+                transition: 'background 0.13s'
+              }}
+            >🗑️</button>
+            {/* Export JSON */}
+            <button
+              title="Export notes as JSON"
+              aria-label="Export notes (JSON)"
+              onClick={() => handleExport('json')}
+              style={{
+                background: 'none',
+                border: `2px solid ${theme.primary}`,
+                borderRadius: 10,
+                fontSize: 15.5,
+                color: theme.primary,
+                fontWeight: 'bold',
+                padding: '4px 8px',
+                cursor: 'pointer'
+              }}
+            >⭳ JSON</button>
+            {/* Export TXT */}
+            <button
+              title="Export notes as TXT"
+              aria-label="Export notes (TXT)"
+              onClick={() => handleExport('txt')}
+              style={{
+                background: 'none',
+                border: `2px solid ${theme.accentBrownLight}`,
+                borderRadius: 10,
+                fontSize: 15.5,
+                color: theme.accentBrownLight,
+                fontWeight: 'bold',
+                padding: '4px 8px',
+                marginRight: 2,
+                cursor: 'pointer'
+              }}
+            >⭳ TXT</button>
+            {/* Import button */}
+            <label style={{
+              background: 'none',
+              border: `2px solid ${theme.accentBrown}`,
+              color: theme.accentBrown,
+              fontWeight: 'bold',
+              fontSize: 15.2,
+              borderRadius: 10,
+              padding: '4px 10px',
+              cursor: 'pointer',
+              marginRight: 7
+            }}>
+              ⬆️ Import
+              <input
+                type="file"
+                style={{ display: "none" }}
+                accept=".json,.txt"
+                onChange={handleImportFile}
+                aria-label="Import notes"
+              />
+            </label>
             <input
               type="text"
               value={search}
