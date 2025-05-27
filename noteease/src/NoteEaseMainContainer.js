@@ -389,11 +389,13 @@ function NoteEaseMainContainer() {
               ⨉
             </div>
             <div style={{
-              fontSize: 20,
+              fontSize: 22,
               marginBottom: 14,
-              color: theme.primary,
-              fontWeight: 600,
-              fontFamily: "'Marker Felt', 'Noteworthy', 'Inter', sans-serif"
+              color: theme.accentBrown,
+              fontWeight: 700,
+              fontFamily: "'Marker Felt', 'Noteworthy', 'Inter', sans-serif",
+              letterSpacing: '0.05em',
+              textShadow: `0 1px 0 ${theme.accentBrownLight}22`
             }}>
               {selectedNote ? 'Edit Note' : 'New Note'}
             </div>
@@ -404,15 +406,15 @@ function NoteEaseMainContainer() {
               onChange={e => setEditBuffer(b => ({ ...b, title: e.target.value }))}
               style={{
                 fontSize: 18,
-                fontWeight: 600,
+                fontWeight: 700,
                 border: 'none',
                 outline: 'none',
                 width: '100%',
                 background: 'none',
-                borderBottom: `1.5px solid ${theme.line}`,
+                borderBottom: `2px solid ${theme.accentBrownLight}`,
                 marginBottom: 10,
                 color: theme.text,
-                padding: '0.3em 0'
+                padding: '0.35em 0'
               }}
             />
             <textarea
@@ -422,16 +424,17 @@ function NoteEaseMainContainer() {
               rows={6}
               style={{
                 fontSize: 16,
-                border: `1.3px solid ${theme.line}`,
-                borderRadius: 6,
+                border: `1.7px solid ${theme.accentBrownLight}`,
+                borderRadius: 7,
                 width: '100%',
-                padding: '0.7em',
+                padding: '0.8em',
                 marginBottom: 10,
                 color: theme.text,
                 fontFamily: "'Noteworthy', 'Inter', 'Roboto', sans-serif",
                 background: isDark ? theme.paper : '#fff8',
                 resize: 'vertical',
                 minHeight: 90,
+                boxShadow: '0 3.5px 0 #cbb37f15',
               }}
             />
             {/* Tag adder */}
