@@ -8,16 +8,21 @@ import React, { useRef, useEffect, useCallback, useState } from "react";
  *   - setEditBuffer: function to update content
  *   - theme: UI theme color object
  *   - isDark: boolean, dark mode flag
+ *
+ * This component provides a toolbar with Undo and Redo controls. Undo and Redo
+ * are available both by button (↺, ↻) and via keyboard shortcut Ctrl+Z / Ctrl+Y.
+ * Undo/Redo work only within the current editor session for a note.
+ * History is reset upon switching/editing another note.
  */
 function NoteEditorWithUndoRedo({ editBuffer, setEditBuffer, theme, isDark }) {
-  // History state
+  // History stack for the note editor session (only content string)
   const [history, setHistory] = useState([editBuffer.content || ""]);
   const [historyIdx, setHistoryIdx] = useState(0);
   const [userInputFlag, setUserInputFlag] = useState(false);
 
   const contentRef = useRef(null);
 
-  // Keep editBuffer in sync with history if externally updated (e.g. switching notes)
+  // If the editBuffer.content changes (note is switched), reset history stack
   useEffect(() => {
     if (editBuffer.content !== history[historyIdx]) {
       setHistory([editBuffer.content || ""]);
@@ -26,21 +31,22 @@ function NoteEditorWithUndoRedo({ editBuffer, setEditBuffer, theme, isDark }) {
     // eslint-disable-next-line
   }, [editBuffer.content]);
 
-  // On input: update buffer, push to history
+  // On editor input: update content and push to history
   const handleInput = useCallback(
     (e) => {
       const html = e.currentTarget.innerHTML;
       setEditBuffer((b) => ({ ...b, content: html }));
 
-      // Optimization: avoid stacking duplicate history entries
       setHistory((h) => {
+        // Avoid stacking duplicate entries
         if (h[historyIdx] === html) return h;
-        // If not at end: discard forward
+        // Branch cut: discard redo stack if editing after undo
         const next = [...h.slice(0, historyIdx + 1), html];
-        // Limit stack to last 50 entries
+        // Limit stack to last 50 entries for memory efficiency
         return next.length > 50 ? next.slice(next.length - 50) : next;
       });
       setHistoryIdx((idx) => {
+        // Make sure index matches new stack
         return idx + 1 > 49 ? 49 : idx + 1;
       });
       setUserInputFlag(true);
@@ -48,7 +54,8 @@ function NoteEditorWithUndoRedo({ editBuffer, setEditBuffer, theme, isDark }) {
     [setEditBuffer, historyIdx]
   );
 
-  // On undo
+  // Undo handler
+  // PUBLIC_INTERFACE
   const handleUndo = useCallback(() => {
     if (historyIdx > 0) {
       const newIdx = historyIdx - 1;
@@ -58,7 +65,8 @@ function NoteEditorWithUndoRedo({ editBuffer, setEditBuffer, theme, isDark }) {
     }
   }, [history, historyIdx, setEditBuffer]);
 
-  // On redo
+  // Redo handler
+  // PUBLIC_INTERFACE
   const handleRedo = useCallback(() => {
     if (historyIdx < history.length - 1) {
       const newIdx = historyIdx + 1;
@@ -68,7 +76,7 @@ function NoteEditorWithUndoRedo({ editBuffer, setEditBuffer, theme, isDark }) {
     }
   }, [history, historyIdx, setEditBuffer]);
 
-  // Keyboard shortcuts: Ctrl+Z, Ctrl+Y
+  // Keyboard shortcuts for undo/redo within the editor
   useEffect(() => {
     const handler = (e) => {
       if (
@@ -89,18 +97,18 @@ function NoteEditorWithUndoRedo({ editBuffer, setEditBuffer, theme, isDark }) {
     return () => document.removeEventListener("keydown", handler, true);
   }, [handleUndo, handleRedo]);
 
-  // Make sure contentEditable reflects external history change with caret reset
+  // When undo/redo (not editor input): sync contentEditable view to stack
+  // Only trigger when not coming from direct input (avoid infinite loop)
   useEffect(() => {
     if (contentRef.current && !userInputFlag) {
-      // Avoid React hydration overwrite loops by not updating on every render
       contentRef.current.innerHTML = history[historyIdx] || "";
-      // Optionally: place caret at end
+      // Optionally: move caret to end after undo/redo for UX
     }
     setUserInputFlag(false);
     // eslint-disable-next-line
   }, [historyIdx]);
 
-  // Formatting button handler
+  // Text formatting (bold/italic/ulist)
   const execFormat = (cmd) => (e) => {
     e.preventDefault();
     document.execCommand?.(cmd, false, null);
@@ -109,6 +117,7 @@ function NoteEditorWithUndoRedo({ editBuffer, setEditBuffer, theme, isDark }) {
       handleInput({ currentTarget: contentRef.current });
   };
 
+  // Toolbar and editable area
   return (
     <div
       style={{
@@ -121,7 +130,7 @@ function NoteEditorWithUndoRedo({ editBuffer, setEditBuffer, theme, isDark }) {
         padding: 0,
       }}
     >
-      {/* Formatting toolbar & undo/redo */}
+      {/* Toolbar: Undo/Redo (as requested), and formatting buttons */}
       <div
         style={{
           display: "flex",
@@ -229,7 +238,7 @@ function NoteEditorWithUndoRedo({ editBuffer, setEditBuffer, theme, isDark }) {
           • List
         </button>
       </div>
-      {/* Rich contentEditable area */}
+      {/* Rich contentEditable area for note editing */}
       <div
         contentEditable
         suppressContentEditableWarning
@@ -259,7 +268,7 @@ function NoteEditorWithUndoRedo({ editBuffer, setEditBuffer, theme, isDark }) {
         tabIndex={0}
         onInput={handleInput}
         onBlur={e => {
-          // Ensure <div> does not empty to <br>
+          // Protect against save of <br> when empty
           if (e.currentTarget.innerHTML === "<br>") {
             setEditBuffer(b => ({ ...b, content: "" }));
           }
