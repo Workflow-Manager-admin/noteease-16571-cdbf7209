@@ -92,6 +92,65 @@ function NoteEaseMainContainer() {
   const [filterTag, setFilterTag] = useState('all');
   const [filterShow, setFilterShow] = useState('all'); // 'all', 'pinned', 'favorite', 'archived'
 
+  // Keyboard shortcuts effect
+  useEffect(() => {
+    function isTypingInInputTarget(e) {
+      const tag = (e.target.tagName || '').toLowerCase();
+      return (
+        tag === 'input' ||
+        tag === 'textarea' ||
+        e.target.isContentEditable
+      );
+    }
+
+    function handleShortcut(e) {
+      // Only proceed on ctrl/cmd keys
+      if (!(e.ctrlKey || e.metaKey)) return;
+
+      // Do not trigger in the note editor overlay
+      if (showEditor) return;
+
+      // Do not trigger if typing into inputs/fields
+      if (isTypingInInputTarget(e)) return;
+
+      // (Ctrl+N) New Note
+      if ((e.key === 'n' || e.key === 'N')) {
+        e.preventDefault();
+        startNewNote();
+        return;
+      }
+
+      // (Ctrl+F) Focus search
+      if ((e.key === 'f' || e.key === 'F')) {
+        e.preventDefault();
+        if (searchInputRef.current) searchInputRef.current.focus();
+        return;
+      }
+
+      // (Ctrl+P) Pin/unpin selected note (only if one is selected)
+      if ((e.key === 'p' || e.key === 'P')) {
+        if (selectedNote && !selectedNote.trashed) {
+          e.preventDefault();
+          togglePin(selectedNote.id);
+        }
+        return;
+      }
+
+      // (Ctrl+Shift+A) Archive/unarchive selected note (only if selected)
+      if ((e.key === 'A' || e.key === 'a') && e.shiftKey) {
+        if (selectedNote && !selectedNote.trashed) {
+          e.preventDefault();
+          toggleArchive(selectedNote.id);
+        }
+        return;
+      }
+    }
+
+    document.addEventListener('keydown', handleShortcut, true);
+    return () => document.removeEventListener('keydown', handleShortcut, true);
+    // eslint-disable-next-line
+  }, [showEditor, selectedNote]); // Only recompute if editor/selected changes
+
   // Similar theme palette extended for sepia/high-contrast
   const THEME = useMemo(() => ({
     light: {
