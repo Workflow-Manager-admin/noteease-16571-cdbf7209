@@ -1124,4 +1124,288 @@ function NoteEaseMainContainer() {
   );
 }
 
+/** --- Trash Bin and Export/Import handlers --- */
+
+// Export notes as JSON/TXT. Format: 'json' or 'txt'
+function handleExport(format) {
+  // Only export non-trashed notes
+  const exportNotes = notes.filter(n => !n.trashed);
+  if (format === 'json') {
+    // Save JSON
+    const blob = new Blob([JSON.stringify(exportNotes, null, 2)], { type: "application/json" });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `noteease-notes-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  } else if (format === 'txt') {
+    // Export as plaintext (readable)
+    const txt = exportNotes.map(n =>
+      `Title: ${n.title}\nTags: ${(n.tags || []).join(', ')}\nContent:\n${stripHtml(n.content)}\n---\n`
+    ).join('\n');
+    const blob = new Blob([txt], { type: "text/plain" });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `noteease-notes-${new Date().toISOString().slice(0, 10)}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+}
+
+// Helper: strip HTML tags.
+function stripHtml(html) {
+  var tmp = document.createElement("DIV");
+  tmp.innerHTML = html || "";
+  return tmp.textContent || tmp.innerText || "";
+}
+
+// Import file handler (accepts .json or .txt)
+function handleImportFile(e) {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  const ext = file.name.split('.').pop().toLowerCase();
+  const reader = new FileReader();
+  reader.onload = function (ev) {
+    const text = ev.target.result;
+    if (ext === 'json') {
+      try {
+        const arr = JSON.parse(text);
+        if (Array.isArray(arr) && arr.every(noteLike)) {
+          // Merge with current notes; avoid duplicate ids.
+          const ids = new Set(notes.map(n => n.id));
+          let nextNotes = [
+            ...arr.map(n => ({
+              ...n,
+              id: !ids.has(n.id) && n.id ? n.id : Date.now() + Math.floor(Math.random() * 10000)
+            })),
+            ...notes
+          ];
+          setNotes(nextNotes);
+          alert("Notes imported from JSON.");
+        } else {
+          alert("Not a valid NoteEase JSON.");
+        }
+      } catch {
+        alert("Invalid JSON format.");
+      }
+    } else if (ext === 'txt') {
+      // Parse very simply: Split notes by '---'
+      const noteChunks = text.split("\n---\n");
+      let parsed = noteChunks.map(chunk => {
+        const m1 = chunk.match(/^Title: (.*)$/m);
+        const m2 = chunk.match(/^Tags: (.*)$/m);
+        const m3 = chunk.match(/Content:\n([\s\S]*)/m);
+        return {
+          id: Date.now() + Math.floor(Math.random() * 10000),
+          title: m1 ? m1[1] : "Imported Note",
+          content: (m3 ? m3[1] : chunk).trim(),
+          tags: m2 ? m2[1].split(',').map(t => t.trim()).filter(Boolean) : [],
+          pinned: false,
+          favorite: false,
+          archived: false,
+          trashed: false,
+          color: colorOptions[0],
+          checklist: false,
+          reminder: null
+        };
+      });
+      setNotes([...parsed, ...notes]);
+      alert("TXT notes imported.");
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+// Validate if object is note-like for .json import
+function noteLike(obj) {
+  return typeof obj === 'object'
+    && typeof obj.title === 'string'
+    && 'content' in obj;
+}
+
+/* Trash Bin Modal State & Logic */
+const [showTrashBin, setShowTrashBin] = React.useState(false);
+
+// Handler to restore note from Trash Bin
+function handleRestoreTrash(noteId) {
+  setNotes(notes => notes.map(n =>
+    n.id === noteId ? { ...n, trashed: false, archived: false } : n
+  ));
+}
+
+// Handler to permanently delete note from Trash Bin
+function handleDeleteTrash(noteId) {
+  setNotes(notes => notes.filter(n => n.id !== noteId));
+}
+
+// Handler: Empty all trashed notes
+function handleEmptyTrash() {
+  if (window.confirm("Permanently delete all trashed notes?")) {
+    setNotes(notes => notes.filter(n => !n.trashed));
+    setShowTrashBin(false);
+  }
+}
+
+// Trashed notes list for the modal
+const trashedNotes = notes.filter(n => n.trashed);
+
+// --- Trash Bin Modal Component ---
+const TrashBinModal = showTrashBin ? (
+  <div style={{
+    position: 'fixed',
+    left: 0, top: 0, width: '100vw', height: '100vh',
+    background: '#0007',
+    zIndex: 9999,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+  }}>
+    <div style={{
+      minWidth: 320,
+      maxWidth: 430,
+      background: theme.paper,
+      color: theme.text,
+      borderRadius: 14,
+      boxShadow: '0px 8px 26px #201702bb',
+      border: `2.25px solid ${theme.primary}15`,
+      padding: '2.2em 0.9em 1.5em 1.1em',
+      position: 'relative'
+    }}>
+      <div style={{
+        position: 'absolute',
+        top: 12,
+        right: 19,
+        fontSize: 21,
+        color: `${theme.primary}`,
+        cursor: 'pointer'
+      }}
+        onClick={() => setShowTrashBin(false)}
+        title="Close Trash Bin"
+      >⨉</div>
+      <div style={{
+        fontSize: 21,
+        fontWeight: 800,
+        marginBottom: 12,
+        color: theme.accentBrown
+      }}>Trash Bin</div>
+      {trashedNotes.length === 0 ? (
+        <div style={{ textAlign: 'center', padding: 18, opacity: 0.64 }}>Trash is empty.</div>
+      ) : (
+        <ul style={{
+          listStyle: 'none',
+          margin: 0,
+          padding: 0,
+          maxHeight: 300,
+          overflowY: 'auto'
+        }}>
+          {trashedNotes.map(note => (
+            <li key={note.id} style={{
+              background: note.color || theme.paperEdge,
+              borderRadius: 7,
+              padding: '10px 7px 7px 12px',
+              marginBottom: 10,
+              borderLeft: `5.5px solid ${theme.accentBrownLight}`,
+              borderBottom: `1.8px solid ${theme.accentBrownLight}`,
+              boxShadow: '0 2px 10px #cdb28b10',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              position: 'relative'
+            }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{
+                  fontWeight: 800,
+                  fontSize: 16,
+                  color: theme.accentBrown
+                }}>
+                  {note.title || <i style={{ color: '#b8aa8b' }}>Untitled</i>}
+                </div>
+                <div style={{
+                  fontSize: 13.5,
+                  color: `${theme.text}88`,
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
+                }}>{stripHtml(note.content).slice(0, 60)}{stripHtml(note.content).length > 60 ? '…' : ''}</div>
+                <div style={{
+                  fontSize: 12.5,
+                  color: '#bdac85',
+                  letterSpacing: 0.02
+                }}>
+                  {(note.tags || []).join(', ')}
+                </div>
+              </div>
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 7,
+                alignItems: 'flex-end',
+                marginLeft: 8,
+                minWidth: 34
+              }}>
+                <button
+                  aria-label="Restore note"
+                  title="Restore"
+                  style={{
+                    background: '#79e64115',
+                    border: `1.6px solid #79e641`,
+                    borderRadius: 6,
+                    fontSize: 14.5,
+                    color: '#368a33',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    marginBottom: 1,
+                  }}
+                  onClick={() => handleRestoreTrash(note.id)}
+                >Restore</button>
+                <button
+                  aria-label="Delete note permanently"
+                  title="Delete permanently"
+                  style={{
+                    background: '#e97b7b25',
+                    border: `1.6px solid #db4343`,
+                    borderRadius: 6,
+                    fontSize: 14.5,
+                    color: '#b20c0c',
+                    fontWeight: 600,
+                    cursor: 'pointer'
+                  }}
+                  onClick={() => {
+                    if (window.confirm('Delete this note permanently?')) handleDeleteTrash(note.id);
+                  }}
+                >Delete</button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+      {trashedNotes.length > 0 &&
+        <div style={{ textAlign: 'right', marginTop: 12 }}>
+          <button
+            aria-label="Delete all trashed notes"
+            title="Empty Trash (permanent!)"
+            style={{
+              background: '#d43a366a',
+              color: '#fff',
+              fontWeight: 700,
+              padding: '9px 18px',
+              borderRadius: 8,
+              fontSize: 15,
+              border: 'none',
+              cursor: 'pointer'
+            }}
+            onClick={handleEmptyTrash}
+          >Empty Trash</button>
+        </div>
+      }
+    </div>
+  </div>
+) : null;
+
+{/* Render the Trash Bin Modal (if open) */}
+{TrashBinModal}
+
 export default NoteEaseMainContainer;
