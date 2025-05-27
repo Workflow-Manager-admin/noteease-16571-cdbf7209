@@ -464,6 +464,7 @@ function NoteEaseMainContainer() {
             <input
               type="text"
               value={search}
+              ref={searchInputRef}
               onChange={e => setSearch(e.target.value)}
               placeholder="Search notes..."
               style={{
