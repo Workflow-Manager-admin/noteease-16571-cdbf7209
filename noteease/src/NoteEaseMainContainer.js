@@ -596,6 +596,31 @@ function NoteEaseMainContainer() {
               </select>
             </div>
           </div>
+          {/* Keyboard Shortcuts Legend */}
+          <div
+            style={{
+              margin: "10px 0 3px 0",
+              background: `${theme.searchBg}`,
+              color: `${theme.accentBrown}`,
+              border: `1px dashed ${theme.accentBrownLight}`,
+              borderRadius: 10,
+              padding: "7px 11px 5px 11px",
+              fontSize: 13.5,
+              fontFamily: "'Inter', 'Noteworthy', sans-serif",
+              letterSpacing: 0.01,
+              opacity: 0.85,
+              boxShadow: "0 2px 11px #e3d6aa08",
+              maxWidth: 340,
+            }}
+          >
+            <span style={{ fontWeight: 600, marginRight: 12, color: theme.accentBrownLight, fontSize: 14 }}>
+              Shortcuts:
+            </span>
+            <span title="Add new note (Ctrl+N)"> <b>Ctrl+N</b> New </span>
+            <span style={{ marginLeft: 7 }} title="Focus search (Ctrl+F)"><b>Ctrl+F</b> Search </span>
+            <span style={{ marginLeft: 7 }} title="Pin/unpin note (Ctrl+P)"><b>Ctrl+P</b> Pin</span>
+            <span style={{ marginLeft: 7 }} title="Archive/unarchive note (Ctrl+Shift+A)"><b>Ctrl+Shift+A</b> Archive</span>
+          </div>
         </div>
         <div
           style={{
