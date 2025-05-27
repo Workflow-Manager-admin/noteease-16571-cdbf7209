@@ -1022,47 +1022,114 @@ function NoteEaseMainContainer() {
               </li>
             )}
             {filteredNotes
-              .map(note => (
-                <li key={note.id}
-                  tabIndex={0}
-                  style={{
-                    background: note.color || (selectedNote && selectedNote.id === note.id)
-                      ? (note.color || `${theme.accentBrown}18`)
-                      : 'none',
-                    minHeight: 72,
-                    marginBottom: '10px',
-                    display: 'flex',
-                    alignItems: 'stretch',
-                    justifyContent: 'space-between',
-                    borderRadius: 9,
-                    borderLeft: `6px solid ${theme.accentBrown}`,
-                    borderBottom: `2px solid ${theme.accentBrownLight}`,
-                    boxShadow: note.pinned
-                      ? '0px 5px 15px #e6c99e38'
-                      : '0px 2.5px 0px 0px #61421c13',
-                    position: 'relative',
-                    outline: selectedNote && selectedNote.id === note.id ? `2px solid ${theme.primary}` : 'none',
-                    cursor: 'pointer',
-                    transition: 'all 0.11s',
-                    padding: 0
-                  }}
-                >
+              .map(note => {
+                // For each note, create a ref for swipe
+                const cardRef = React.createRef();
+                // Attach swipe gestures: Left = Archive, Right = Delete (if not archived); Right = Restore if in archive.
+                useSwipe(cardRef, {
+                  onSwipeLeft: note.archived
+                    ? null // Already archived, no-op
+                    : () => {
+                      if (window.innerWidth < 700) toggleArchive(note.id); // Only on mobile
+                    },
+                  onSwipeRight: !note.trashed
+                    ? () => {
+                        if (window.innerWidth < 700) trashNote(note.id); // Only on mobile, if not already trashed
+                      }
+                    : null,
+                  minSwipe: 46 // slightly less than default for mobile feel
+                });
+                // Dynamic swipe action indicator overlay
+                // Show swipe-left/right hints on touch devices
+                let swipeHint = null;
+                if (window.innerWidth < 700) {
+                  swipeHint = (
+                    <div style={{
+                      position: "absolute", left: 0, top: 0,
+                      width: "100%", height: "100%", pointerEvents: "none",
+                      zIndex: 2, display: "flex", justifyContent: "space-between", alignItems: "center"
+                    }}>
+                      <span style={{
+                        fontSize: 16, color: "#b5682eAA", marginLeft: 8, fontWeight: 700,
+                        background: "#fff7e957", borderRadius: 8, padding: "2px 10px", minWidth: 28
+                      }}>
+                        {/* swipe right for trash */}
+                        {note.archived || note.trashed ? "" : "⟵ Trash"}
+                      </span>
+                      <span style={{
+                        fontSize: 16, color: "#a78a41AA", marginRight: 8, fontWeight: 700,
+                        background: "#fff7e957", borderRadius: 8, padding: "2px 10px", minWidth: 36, textAlign: "right"
+                      }}>
+                        {/* swipe left for archive */}
+                        {!note.archived ? "Archive ⟶" : ""}
+                      </span>
+                    </div>
+                  );
+                }
+                // Responsive style: cards = single major tap target, larger buttons for touch areas.
+                const mobile = window.innerWidth < 700;
+                return (
+                  <li key={note.id}
+                    tabIndex={0}
+                    ref={cardRef}
+                    style={{
+                      background: note.color || (selectedNote && selectedNote.id === note.id)
+                        ? (note.color || `${theme.accentBrown}18`)
+                        : 'none',
+                      minHeight: 72,
+                      marginBottom: mobile ? '16px' : '10px',
+                      display: 'flex',
+                      flexDirection: mobile ? 'column' : 'row',
+                      alignItems: mobile ? 'stretch' : 'stretch',
+                      justifyContent: 'space-between',
+                      borderRadius: 9,
+                      borderLeft: `6px solid ${theme.accentBrown}`,
+                      borderBottom: `2px solid ${theme.accentBrownLight}`,
+                      boxShadow: note.pinned
+                        ? '0px 5px 15px #e6c99e38'
+                        : '0px 2.5px 0px 0px #61421c13',
+                      position: 'relative',
+                      outline: selectedNote && selectedNote.id === note.id ? `2px solid ${theme.primary}` : 'none',
+                      cursor: 'pointer',
+                      transition: 'all 0.11s',
+                      padding: 0,
+                      overflow: "hidden",
+                      userSelect: mobile ? "none" : "auto",
+                      touchAction: "pan-y"
+                    }}
+                  >
+                  {swipeHint}
                   {/* Left controls: Pin, Favorite, Color */}
                   <div style={{
-                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                    padding: '0 7px 0 4px', gap: 3, minWidth: 30
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: window.innerWidth < 700 ? '0 7px 0 4px' : '0 7px 0 4px',
+                    gap: window.innerWidth < 700 ? 7 : 3,
+                    minWidth: window.innerWidth < 700 ? 44 : 30
                   }}>
                     <button title="Pin/unpin" tabIndex={-1} style={{
-                      background: 'none', border: 'none', cursor: 'pointer', fontSize: 18, color: note.pinned ? theme.primary : theme.accentBrownLight
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontSize: window.innerWidth < 700 ? 24 : 18,
+                      color: note.pinned ? theme.primary : theme.accentBrownLight,
+                      padding: window.innerWidth < 700 ? '8px 0' : '0'
                     }} onClick={e => { e.stopPropagation(); togglePin(note.id); }}>
                       {note.pinned ? '📌' : '📍'}
                     </button>
                     <button title="Favorite" tabIndex={-1} style={{
-                      background: 'none', border: 'none', cursor: 'pointer', fontSize: 18, color: note.favorite ? '#ffb934' : '#ad9f7a'
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontSize: window.innerWidth < 700 ? 24 : 18,
+                      color: note.favorite ? '#ffb934' : '#ad9f7a',
+                      padding: window.innerWidth < 700 ? '8px 0' : '0'
                     }} onClick={e => { e.stopPropagation(); toggleFavorite(note.id); }}>
                       {note.favorite ? '★' : '☆'}
                     </button>
-                    <div style={{ height: 8 }}></div>
+                    <div style={{ height: window.innerWidth < 700 ? 14 : 8 }}></div>
                     {/* Color picker dropdown */}
                     <div style={{ position: 'relative' }}>
                       <button
