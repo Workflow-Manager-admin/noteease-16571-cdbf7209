@@ -108,9 +108,59 @@ function NoteEaseMainContainer() {
     [notes, search]
   );
 
+  // Custom icon controls: utility variables for colors/categories, emoji-UI mapping.
+  const colorOptions = [
+    "#FFD966", "#FFF2CC", "#A5D8FF", "#FFD6E0", "#84e7ba", "#BAE15A"
+  ];
+  const categoryOptions = [
+    "Personal", "Groceries", "Work", "Ideas", "Meetings", "Archive"
+  ];
+
+  // Button handlers for actions – spread to new object, update in place by id.
+  function togglePin(id) {
+    setNotes(notes => notes.map(n =>
+      n.id === id ? { ...n, pinned: !n.pinned } : n
+    ));
+  }
+  function toggleFavorite(id) {
+    setNotes(notes => notes.map(n =>
+      n.id === id ? { ...n, favorite: !n.favorite } : n
+    ));
+  }
+  function toggleArchive(id) {
+    setNotes(notes => notes.map(n =>
+      n.id === id ? { ...n, archived: !n.archived, pinned: false } : n
+    ));
+  }
+  function trashNote(id) {
+    setNotes(notes => notes.map(n =>
+      n.id === id ? { ...n, trashed: true, archived: false, pinned: false } : n
+    ));
+  }
+  function restoreNote(id) {
+    setNotes(notes => notes.map(n =>
+      n.id === id ? { ...n, trashed: false, archived: false } : n
+    ));
+  }
+  function changeColor(id, color) {
+    setNotes(notes => notes.map(n =>
+      n.id === id ? { ...n, color } : n
+    ));
+  }
+  function changeChecklist(id) {
+    setNotes(notes => notes.map(n =>
+      n.id === id ? { ...n, checklist: !n.checklist } : n
+    ));
+  }
+  function toggleReminder(id) {
+    setNotes(notes => notes.map(n =>
+      n.id === id ? { ...n, reminder: n.reminder ? null : new Date(Date.now()+3600*1000).toISOString() } : n
+    ));
+  }
+
   // Handlers for FAB, editing, etc.
   function startNewNote() {
-    setEditBuffer({ title: '', content: '', tags: [] });
+    setEditBuffer({ title: '', content: '', tags: [], pinned: false, favorite: false, archived: false, trashed: false, color: colorOptions[0], checklist: false, reminder: null });
     setSelectedNote(null);
     setShowEditor(true);
   }
