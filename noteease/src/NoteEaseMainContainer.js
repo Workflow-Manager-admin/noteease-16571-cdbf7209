@@ -1228,30 +1228,55 @@ function NoteEaseMainContainer() {
                   </div>
                   {/* Right controls: Archive/restore, Trash/delete, Checklist, Reminder */}
                   <div style={{
-                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                    padding: '0 6px 0 5px', gap: 3, minWidth: 35
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: window.innerWidth < 700 ? '0 8px 0 6px' : '0 6px 0 5px',
+                    gap: window.innerWidth < 700 ? 11 : 3,
+                    minWidth: window.innerWidth < 700 ? 53 : 35
                   }}>
                     <button title={note.archived ? "Restore from Archive" : "Archive"}
                       tabIndex={-1}
                       style={{
-                        background: 'none', border: 'none', cursor: 'pointer', fontSize: 17, color: '#B07845'
+                        background: 'none',
+                        border: 'none',
+                        cursor: 'pointer',
+                        fontSize: window.innerWidth < 700 ? 24 : 17,
+                        color: '#B07845',
+                        padding: window.innerWidth < 700 ? '10px 0' : '0'
                       }}
                       onClick={e => { e.stopPropagation(); toggleArchive(note.id); }}>
                       {note.archived ? '🗂️' : '🗄️'}
                     </button>
                     <button title="Trash" tabIndex={-1} style={{
-                      background: 'none', border: 'none', cursor: 'pointer', fontSize: 17, color: '#fe4304'
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontSize: window.innerWidth < 700 ? 24 : 17,
+                      color: '#fe4304',
+                      padding: window.innerWidth < 700 ? '10px 0' : '0'
                     }} onClick={e => { e.stopPropagation(); trashNote(note.id); }}>
                       🗑️
                     </button>
-                    <div style={{ height: 8 }}></div>
+                    <div style={{ height: window.innerWidth < 700 ? 14 : 8 }}></div>
                     <button title="Toggle Checklist" tabIndex={-1} style={{
-                      background: 'none', border: 'none', cursor: 'pointer', fontSize: 17, color: note.checklist ? '#68aa4a' : '#B07845'
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontSize: window.innerWidth < 700 ? 24 : 17,
+                      color: note.checklist ? '#68aa4a' : '#B07845',
+                      padding: window.innerWidth < 700 ? '8px 0' : '0'
                     }} onClick={e => { e.stopPropagation(); changeChecklist(note.id); }}>
                       {note.checklist ? '☑️' : '☐'}
                     </button>
                     <button title="Toggle Reminder" tabIndex={-1} style={{
-                      background: 'none', border: 'none', cursor: 'pointer', fontSize: 17, color: note.reminder ? '#edb419' : '#b8ae6b'
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontSize: window.innerWidth < 700 ? 24 : 17,
+                      color: note.reminder ? '#edb419' : '#b8ae6b',
+                      padding: window.innerWidth < 700 ? '8px 0' : '0'
                     }} onClick={e => { e.stopPropagation(); toggleReminder(note.id); }}>
                       ⏰
                     </button>
