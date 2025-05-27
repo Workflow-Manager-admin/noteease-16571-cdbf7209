@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import NoteEditorWithUndoRedo from './NoteEditorWithUndoRedo';
 
 /**
@@ -26,6 +26,15 @@ const THEME_PRESETS = [
     emoji: '🟨',
   }
 ];
+
+/**
+ * Keyboard Shortcuts (global, except inside editor/input):
+ *   - Ctrl+N: New note
+ *   - Ctrl+F: Focus on Search
+ *   - Ctrl+P: Pin/unpin selected note
+ *   - Ctrl+Shift+A: Archive/unarchive selected note
+ * See bottom legend for details.
+ */
 
 // PUBLIC_INTERFACE
 function NoteEaseMainContainer() {
@@ -71,6 +80,7 @@ function NoteEaseMainContainer() {
     }
   ]);
   const [search, setSearch] = useState('');
+  const searchInputRef = useRef(null); // for Ctrl+F focus
   const [selectedNote, setSelectedNote] = useState(null);
   const [editBuffer, setEditBuffer] = useState({ title: '', content: '', tags: [] });
   // Theme modes: 'light', 'dark', 'sepia', 'contrast'
