@@ -439,7 +439,14 @@ function NoteEaseMainContainer() {
             />
             {/* Tag adder */}
             <div style={{ marginBottom: 8 }}>
-              <div style={{ fontSize: 14.5, color: theme.primary, fontWeight: 600, marginBottom: 2, letterSpacing: 0.1 }}>Tags:</div>
+              <div style={{
+                fontSize: 15,
+                color: theme.accentBrown,
+                fontWeight: 700,
+                marginBottom: 2,
+                letterSpacing: 0.13,
+                textShadow: `0 1px 0 ${theme.accentBrownLight}22`
+              }}>Tags:</div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                 {editBuffer.tags.map((tag, idx) => (
                   <div
@@ -453,7 +460,9 @@ function NoteEaseMainContainer() {
                       fontSize: 13.3,
                       display: 'flex',
                       alignItems: 'center',
-                      fontWeight: 500
+                      fontWeight: 500,
+                      border: `1px solid ${theme.accentBrownLight}44`,
+                      boxShadow: '0px 1.5px 7px #ae917a19'
                     }}>
                     {tag}
                     <span style={{
@@ -472,11 +481,12 @@ function NoteEaseMainContainer() {
                   maxLength={15}
                   style={{
                     fontSize: 12.5,
-                    border: `1.1px solid ${theme.line}`,
+                    border: `1.3px solid ${theme.accentBrownLight}`,
                     borderRadius: 7,
                     padding: '2.3px 7px',
                     minWidth: 45,
-                    outline: 'none'
+                    outline: 'none',
+                    boxShadow: '0 2px 0 #b9956935'
                   }}
                   placeholder="+add"
                   onKeyDown={handleTagInput}

@@ -51,3 +51,18 @@ src/NoteEaseMainContainer.js
   Line 282:19:  Duplicate key 'background'  no-dupe-keys
 
 webpack compiled with 1 warning
+Compiling...
+Compiled with warnings.
+
+[eslint] 
+src/NoteEaseMainContainer.js
+  Line 282:19:  Duplicate key 'background'  no-dupe-keys
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint] 
+src/NoteEaseMainContainer.js
+  Line 282:19:  Duplicate key 'background'  no-dupe-keys
+
+webpack compiled with 1 warning
