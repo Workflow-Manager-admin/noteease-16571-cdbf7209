@@ -26,11 +26,10 @@ const THEME_PRESETS = [
     emoji: '🟨',
   }
 ];
+
 // PUBLIC_INTERFACE
 function NoteEaseMainContainer() {
-  // Demo state for notes and tags
   const [notes, setNotes] = useState([
-    // Demo data with all feature fields
     {
       id: 1,
       title: "Shopping List",
@@ -82,7 +81,7 @@ function NoteEaseMainContainer() {
   const [sortBy, setSortBy] = useState('date-desc'); // 'date-desc', 'date-asc', 'title-asc', 'title-desc', 'tag-az'
   const [filterTag, setFilterTag] = useState('all');
   const [filterShow, setFilterShow] = useState('all'); // 'all', 'pinned', 'favorite', 'archived'
-  
+
   // Similar theme palette extended for sepia/high-contrast
   const THEME = useMemo(() => ({
     light: {
@@ -151,13 +150,6 @@ function NoteEaseMainContainer() {
     }
   }), []);
   const theme = THEME[uiTheme] || THEME.light;
-  // Utility for selecting tag color
-  function getTagColor(tag) {
-    // Pick a color based on string hash
-    let hash = 0;
-    for (let i = 0; i < tag.length; i++) hash = tag.charCodeAt(i) + ((hash << 5) - hash);
-    return theme.tagColors[Math.abs(hash) % theme.tagColors.length];
-  }
 
   // All tags for filtering
   const allTags = useMemo(() => {
@@ -199,7 +191,7 @@ function NoteEaseMainContainer() {
         res.sort((a, b) => (a.id || 0) - (b.id || 0));
         break;
       case 'date-desc':
-        res.sort((a, b) => (b.id || 0) - (a.id || 0));
+        res.sort((b, a) => (a.id || 0) - (b.id || 0));
         break;
       case 'title-asc':
         res.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
@@ -216,6 +208,14 @@ function NoteEaseMainContainer() {
     return res;
   }, [notes, search, sortBy, filterTag, filterShow]);
 
+  // Utility for selecting tag color
+  function getTagColor(tag) {
+    // Pick a color based on string hash
+    let hash = 0;
+    for (let i = 0; i < tag.length; i++) hash = tag.charCodeAt(i) + ((hash << 5) - hash);
+    return theme.tagColors[Math.abs(hash) % theme.tagColors.length];
+  }
+
   // Custom icon controls: utility variables for colors/categories, emoji-UI mapping.
   const colorOptions = [
     "#FFD966", "#FFF2CC", "#A5D8FF", "#FFD6E0", "#84e7ba", "#BAE15A"
@@ -224,7 +224,6 @@ function NoteEaseMainContainer() {
     "Personal", "Groceries", "Work", "Ideas", "Meetings", "Archive"
   ];
 
-  // Button handlers for actions – spread to new object, update in place by id.
   function togglePin(id) {
     setNotes(notes => notes.map(n =>
       n.id === id ? { ...n, pinned: !n.pinned } : n
@@ -266,7 +265,6 @@ function NoteEaseMainContainer() {
     ));
   }
 
-  // Handlers for FAB, editing, etc.
   function startNewNote() {
     setEditBuffer({ title: '', content: '', tags: [], pinned: false, favorite: false, archived: false, trashed: false, color: colorOptions[0], checklist: false, reminder: null });
     setSelectedNote(null);
@@ -278,7 +276,6 @@ function NoteEaseMainContainer() {
     setShowEditor(true);
   }
   function saveNote() {
-    // Remove excessive empty tags from content
     const stripIfEmpty = (html) => {
       const t = document.createElement('div');
       t.innerHTML = html || '';
@@ -297,7 +294,6 @@ function NoteEaseMainContainer() {
         )
       );
     } else {
-      // Assign unique id
       setNotes(notes =>
         [{ ...editBuffer, content: contentHTML, id: Date.now() }, ...notes]
       );
@@ -310,7 +306,6 @@ function NoteEaseMainContainer() {
     setShowEditor(false);
   }
 
-  // Tag management for simple tag entry (demo)
   function handleTagInput(e) {
     const val = e.target.value.trim();
     if (e.key === 'Enter' && val && !editBuffer.tags.includes(val)) {
@@ -335,13 +330,12 @@ function NoteEaseMainContainer() {
   function toggleTheme() {
     setUITheme((old) =>
       old === 'light' ? 'dark'
-      : old === 'dark' ? 'light'
+      : old === 'dark' ? 'sepia'
       : old === 'sepia' ? 'contrast'
       : 'light'
     );
   }
 
-  // Inline CSS for "notepad" skeuomorphic look
   const linedPaperBg = `repeating-linear-gradient(
     to bottom, 
     ${theme.paper} 0px, 
@@ -439,6 +433,27 @@ function NoteEaseMainContainer() {
                 <option value={opt.id} key={opt.id}>{opt.emoji + " " + opt.name}</option>
               ))}
             </select>
+            {/* Legacy button for quick cycling through themes */}
+            <button
+              aria-label="Quick toggle theme"
+              onClick={toggleTheme}
+              style={{
+                border: 'none',
+                background: 'none',
+                marginLeft: 1,
+                cursor: 'pointer',
+                fontSize: 21,
+                color: theme.primary,
+                padding: 2,
+                verticalAlign: 'middle'
+              }}>
+              {
+                uiTheme === 'dark' ? '🌚'
+                  : uiTheme === 'sepia' ? '📜'
+                    : uiTheme === 'contrast' ? '🟨'
+                      : '🌞'
+              }
+            </button>
           </div>
           {/* Sorting and Filtering controls */}
           <div style={{
@@ -529,208 +544,171 @@ function NoteEaseMainContainer() {
             margin: '0.3em 0 0 0',
             padding: 0
           }}>
-            {filteredNotes.filter(n => !n.trashed && !n.archived).length === 0 &&
-              filteredNotes.filter(n => !n.trashed && n.archived).length === 0 && (
+            {filteredNotes.length === 0 && (
               <li style={{ padding: '1.5em 0', textAlign: 'center', color: `${theme.text}88` }}>
                 No notes found.
               </li>
             )}
-            {/* Sort notes: Pinned (not archived/trashed) on top, then others */}
             {filteredNotes
-              .filter(n => !n.trashed && !n.archived)
-              .sort((a, b) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0))
-              .map(note => (
-              <li key={note.id}
-                tabIndex={0}
-                // Card outer UI change: horizontal flex for controls + content
-                style={{
-                  background: note.color || (selectedNote && selectedNote.id === note.id)
-                    ? (note.color || `${theme.accentBrown}18`)
-                    : 'none',
-                  minHeight: 72,
-                  marginBottom: '10px',
-                  display: 'flex',
-                  alignItems: 'stretch',
-                  justifyContent: 'space-between',
-                  borderRadius: 9,
-                  borderLeft: `6px solid ${theme.accentBrown}`,
-                  borderBottom: `2px solid ${theme.accentBrownLight}`,
-                  boxShadow: note.pinned
-                    ? '0px 5px 15px #e6c99e38'
-                    : '0px 2.5px 0px 0px #61421c13',
-                  position: 'relative',
-                  outline: selectedNote && selectedNote.id === note.id ? `2px solid ${theme.primary}` : 'none',
-                  cursor: 'pointer',
-                  transition: 'all 0.11s',
-                  padding: 0
-                }}
-              >
-                {/* Left controls: Pin, Favorite, Color */}
-                <div style={{
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                  padding: '0 7px 0 4px', gap: 3, minWidth: 30
-                }}>
-                  <button title="Pin/unpin" tabIndex={-1} style={{
-                    background: 'none', border: 'none', cursor: 'pointer', fontSize: 18, color: note.pinned ? theme.primary : theme.accentBrownLight
-                  }} onClick={e => { e.stopPropagation(); togglePin(note.id); }}>
-                    {note.pinned ? '📌' : '📍'}
-                  </button>
-                  <button title="Favorite" tabIndex={-1} style={{
-                    background: 'none', border: 'none', cursor: 'pointer', fontSize: 18, color: note.favorite ? '#ffb934' : '#ad9f7a'
-                  }} onClick={e => { e.stopPropagation(); toggleFavorite(note.id); }}>
-                    {note.favorite ? '★' : '☆'}
-                  </button>
-                  <div style={{ height: 8 }}></div>
-                  {/* Color picker dropdown */}
-                  <div style={{ position: 'relative' }}>
-                    <button
-                      title="Color"
-                      tabIndex={-1}
-                      style={{
-                        width: 18, height: 18, borderRadius: '50%', border: `2px solid ${theme.accentBrownLight}`,
-                        background: note.color, cursor: 'pointer', outline: 'none', marginTop: 2, marginBottom: 2
-                      }}
-                      onClick={e => {
-                        e.stopPropagation();
-                        setNotes(notes =>
-                          notes.map(n =>
-                            n.id === note.id
-                              ? ({ ...n, colorPaletteOpen: !n.colorPaletteOpen })
-                              : ({ ...n, colorPaletteOpen: false })
-                          )
-                        );
-                      }}
-                    />
-                    {note.colorPaletteOpen && (
-                      <div style={{
-                        position: 'absolute', left: 26, top: -10, background: theme.paper, border: `1.7px solid ${theme.accentBrownLight}88`, borderRadius: 7, zIndex: 20,
-                        boxShadow: '0px 2.5px 12px #6d48211a', padding: 4, display: 'flex', gap: 6
-                      }}>
-                        {colorOptions.map(col => (
-                          <button key={col}
-                            onClick={e => { e.stopPropagation(); changeColor(note.id, col); setNotes(ns => ns.map(n => n.id === note.id ? { ...n, colorPaletteOpen: false } : n)); }}
-                            style={{ background: col, border: '1.3px solid #8888', width: 18, height: 18, borderRadius: '50%', cursor: 'pointer' }}
-                          />
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-                {/* Center – Main note info and tags; click to open edit */}
-                <div onClick={() => editNote(note)} style={{
-                  flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', cursor: 'pointer', padding: '8px 4px 6px 6px'
-                }}>
-                  <div style={{
-                    fontWeight: 800,
-                    fontSize: 18,
-                    fontFamily: "'Marker Felt', 'Noteworthy', 'Inter', sans-serif",
-                    color: theme.accentBrown,
-                    letterSpacing: '0.05em',
-                    lineHeight: '21px', textShadow: `0px 1px 0px ${theme.accentBrownLight}22`
-                  }}>
-                    {note.title}
-                    {note.checklist && <span title="Checklist" style={{ marginLeft: 6, fontSize: 17, color: '#68aa4a' }}>☑️</span>}
-                    {note.reminder && <span title="Reminder Set" style={{ marginLeft: 2, fontSize: 17, color: '#edb419' }}>⏰</span>}
-                  </div>
-                  <div style={{
-                    fontSize: 14,
-                    color: `${theme.text}ac`,
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    marginTop: '-2px',
-                    letterSpacing: 0.01,
-                  }}>
-                    {
-                      // Render a plain text snippet from the stored HTML (remove tags)
-                      (() => {
-                        const tmp = document.createElement('div');
-                        tmp.innerHTML = note.content || '';
-                        const snip = tmp.textContent || tmp.innerText || '';
-                        return snip.slice(0, 78) + (snip.length > 78 ? '…' : '');
-                      })()
-                    }
-                  </div>
-                  <div style={{ display: 'flex', gap: 8, marginTop: 1 }}>
-                    {note.tags && note.tags.map((tag, idx) => (
-                      <span key={idx}
-                        style={{
-                          fontSize: 13,
-                          padding: '3px 11px 1.5px 11px',
-                          borderRadius: 7,
-                          fontWeight: 500,
-                          background: `${getTagColor(tag)}cc`,
-                          color: isDark ? theme.accentBrown : '#3a2617',
-                          border: `1px solid ${theme.accentBrownLight}44`,
-                          boxShadow: '0px 1px 6px #ae917a19',
-                          letterSpacing: 0.01
-                        }}>
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                {/* Right controls: Archive/restore, Trash/delete, Checklist, Reminder */}
-                <div style={{
-                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                  padding: '0 6px 0 5px', gap: 3, minWidth: 35
-                }}>
-                  <button title={note.archived ? "Restore from Archive" : "Archive"}
-                    tabIndex={-1}
-                    style={{
-                      background: 'none', border: 'none', cursor: 'pointer', fontSize: 17, color: '#B07845'
-                    }}
-                    onClick={e => { e.stopPropagation(); toggleArchive(note.id); }}>
-                    {note.archived ? '🗂️' : '🗄️'}
-                  </button>
-                  <button title="Trash" tabIndex={-1} style={{
-                    background: 'none', border: 'none', cursor: 'pointer', fontSize: 17, color: '#fe4304'
-                  }} onClick={e => { e.stopPropagation(); trashNote(note.id); }}>
-                    🗑️
-                  </button>
-                  <div style={{ height: 8 }}></div>
-                  <button title="Toggle Checklist" tabIndex={-1} style={{
-                    background: 'none', border: 'none', cursor: 'pointer', fontSize: 17, color: note.checklist ? '#68aa4a' : '#B07845'
-                  }} onClick={e => { e.stopPropagation(); changeChecklist(note.id); }}>
-                    {note.checklist ? '☑️' : '☐'}
-                  </button>
-                  <button title="Toggle Reminder" tabIndex={-1} style={{
-                    background: 'none', border: 'none', cursor: 'pointer', fontSize: 17, color: note.reminder ? '#edb419' : '#b8ae6b'
-                  }} onClick={e => { e.stopPropagation(); toggleReminder(note.id); }}>
-                    ⏰
-                  </button>
-                </div>
-              </li>
-            ))}
-            {/* Render archived notes in a section below if present */}
-            {filteredNotes.filter(n => !n.trashed && n.archived).length > 0 && (
-              <li style={{ margin: '20px 0 2px 8px', color: theme.accentBrownLight, fontSize: 15, opacity: 0.88 }}>Archived</li>
-            )}
-            {filteredNotes
-              .filter(n => !n.trashed && n.archived)
               .map(note => (
                 <li key={note.id}
+                  tabIndex={0}
                   style={{
-                    background: note.color || `${theme.accentBrown}14`,
-                    minHeight: 58,
-                    marginBottom: 7,
+                    background: note.color || (selectedNote && selectedNote.id === note.id)
+                      ? (note.color || `${theme.accentBrown}18`)
+                      : 'none',
+                    minHeight: 72,
+                    marginBottom: '10px',
                     display: 'flex',
-                    alignItems: 'center',
-                    borderRadius: 7,
-                    borderLeft: `4px dashed ${theme.accentBrown}`,
-                    borderBottom: `1.5px solid ${theme.accentBrownLight}`,
-                    padding: '2px 7px'
+                    alignItems: 'stretch',
+                    justifyContent: 'space-between',
+                    borderRadius: 9,
+                    borderLeft: `6px solid ${theme.accentBrown}`,
+                    borderBottom: `2px solid ${theme.accentBrownLight}`,
+                    boxShadow: note.pinned
+                      ? '0px 5px 15px #e6c99e38'
+                      : '0px 2.5px 0px 0px #61421c13',
+                    position: 'relative',
+                    outline: selectedNote && selectedNote.id === note.id ? `2px solid ${theme.primary}` : 'none',
+                    cursor: 'pointer',
+                    transition: 'all 0.11s',
+                    padding: 0
                   }}
                 >
-                  <div style={{ flex: 1, opacity: 0.64, fontSize: 13, padding: '4px 0 3px 0' }}>{note.title}</div>
-                  <button
-                    title="Restore"
-                    style={{
-                      background: 'none', border: 'none', cursor: 'pointer', color: '#3a2617', fontSize: 15, marginLeft: 5
-                    }}
-                    onClick={e => { e.stopPropagation(); restoreNote(note.id); }}>
-                    ♻️
-                  </button>
+                  {/* Left controls: Pin, Favorite, Color */}
+                  <div style={{
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                    padding: '0 7px 0 4px', gap: 3, minWidth: 30
+                  }}>
+                    <button title="Pin/unpin" tabIndex={-1} style={{
+                      background: 'none', border: 'none', cursor: 'pointer', fontSize: 18, color: note.pinned ? theme.primary : theme.accentBrownLight
+                    }} onClick={e => { e.stopPropagation(); togglePin(note.id); }}>
+                      {note.pinned ? '📌' : '📍'}
+                    </button>
+                    <button title="Favorite" tabIndex={-1} style={{
+                      background: 'none', border: 'none', cursor: 'pointer', fontSize: 18, color: note.favorite ? '#ffb934' : '#ad9f7a'
+                    }} onClick={e => { e.stopPropagation(); toggleFavorite(note.id); }}>
+                      {note.favorite ? '★' : '☆'}
+                    </button>
+                    <div style={{ height: 8 }}></div>
+                    {/* Color picker dropdown */}
+                    <div style={{ position: 'relative' }}>
+                      <button
+                        title="Color"
+                        tabIndex={-1}
+                        style={{
+                          width: 18, height: 18, borderRadius: '50%', border: `2px solid ${theme.accentBrownLight}`,
+                          background: note.color, cursor: 'pointer', outline: 'none', marginTop: 2, marginBottom: 2
+                        }}
+                        onClick={e => {
+                          e.stopPropagation();
+                          setNotes(notes =>
+                            notes.map(n =>
+                              n.id === note.id
+                                ? ({ ...n, colorPaletteOpen: !n.colorPaletteOpen })
+                                : ({ ...n, colorPaletteOpen: false })
+                            )
+                          );
+                        }}
+                      />
+                      {note.colorPaletteOpen && (
+                        <div style={{
+                          position: 'absolute', left: 26, top: -10, background: theme.paper, border: `1.7px solid ${theme.accentBrownLight}88`, borderRadius: 7, zIndex: 20,
+                          boxShadow: '0px 2.5px 12px #6d48211a', padding: 4, display: 'flex', gap: 6
+                        }}>
+                          {colorOptions.map(col => (
+                            <button key={col}
+                              onClick={e => { e.stopPropagation(); changeColor(note.id, col); setNotes(ns => ns.map(n => n.id === note.id ? { ...n, colorPaletteOpen: false } : n)); }}
+                              style={{ background: col, border: '1.3px solid #8888', width: 18, height: 18, borderRadius: '50%', cursor: 'pointer' }}
+                            />
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  {/* Center – Main note info and tags; click to open edit */}
+                  <div onClick={() => editNote(note)} style={{
+                    flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', cursor: 'pointer', padding: '8px 4px 6px 6px'
+                  }}>
+                    <div style={{
+                      fontWeight: 800,
+                      fontSize: 18,
+                      fontFamily: "'Marker Felt', 'Noteworthy', 'Inter', sans-serif",
+                      color: theme.accentBrown,
+                      letterSpacing: '0.05em',
+                      lineHeight: '21px', textShadow: `0px 1px 0px ${theme.accentBrownLight}22`
+                    }}>
+                      {note.title}
+                      {note.checklist && <span title="Checklist" style={{ marginLeft: 6, fontSize: 17, color: '#68aa4a' }}>☑️</span>}
+                      {note.reminder && <span title="Reminder Set" style={{ marginLeft: 2, fontSize: 17, color: '#edb419' }}>⏰</span>}
+                    </div>
+                    <div style={{
+                      fontSize: 14,
+                      color: `${theme.text}ac`,
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      marginTop: '-2px',
+                      letterSpacing: 0.01,
+                    }}>
+                      {
+                        (() => {
+                          const tmp = document.createElement('div');
+                          tmp.innerHTML = note.content || '';
+                          const snip = tmp.textContent || tmp.innerText || '';
+                          return snip.slice(0, 78) + (snip.length > 78 ? '…' : '');
+                        })()
+                      }
+                    </div>
+                    <div style={{ display: 'flex', gap: 8, marginTop: 1 }}>
+                      {note.tags && note.tags.map((tag, idx) => (
+                        <span key={idx}
+                          style={{
+                            fontSize: 13,
+                            padding: '3px 11px 1.5px 11px',
+                            borderRadius: 7,
+                            fontWeight: 500,
+                            background: `${getTagColor(tag)}cc`,
+                            color: uiTheme === 'dark' ? theme.accentBrown : '#3a2617',
+                            border: `1px solid ${theme.accentBrownLight}44`,
+                            boxShadow: '0px 1px 6px #ae917a19',
+                            letterSpacing: 0.01
+                          }}>
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  {/* Right controls: Archive/restore, Trash/delete, Checklist, Reminder */}
+                  <div style={{
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                    padding: '0 6px 0 5px', gap: 3, minWidth: 35
+                  }}>
+                    <button title={note.archived ? "Restore from Archive" : "Archive"}
+                      tabIndex={-1}
+                      style={{
+                        background: 'none', border: 'none', cursor: 'pointer', fontSize: 17, color: '#B07845'
+                      }}
+                      onClick={e => { e.stopPropagation(); toggleArchive(note.id); }}>
+                      {note.archived ? '🗂️' : '🗄️'}
+                    </button>
+                    <button title="Trash" tabIndex={-1} style={{
+                      background: 'none', border: 'none', cursor: 'pointer', fontSize: 17, color: '#fe4304'
+                    }} onClick={e => { e.stopPropagation(); trashNote(note.id); }}>
+                      🗑️
+                    </button>
+                    <div style={{ height: 8 }}></div>
+                    <button title="Toggle Checklist" tabIndex={-1} style={{
+                      background: 'none', border: 'none', cursor: 'pointer', fontSize: 17, color: note.checklist ? '#68aa4a' : '#B07845'
+                    }} onClick={e => { e.stopPropagation(); changeChecklist(note.id); }}>
+                      {note.checklist ? '☑️' : '☐'}
+                    </button>
+                    <button title="Toggle Reminder" tabIndex={-1} style={{
+                      background: 'none', border: 'none', cursor: 'pointer', fontSize: 17, color: note.reminder ? '#edb419' : '#b8ae6b'
+                    }} onClick={e => { e.stopPropagation(); toggleReminder(note.id); }}>
+                      ⏰
+                    </button>
+                  </div>
                 </li>
               ))}
           </ul>
@@ -869,18 +847,12 @@ function NoteEaseMainContainer() {
               </button>
             </div>
             {/* Rich Text Editor for Notes */}
-            {/* 
-              --- BEGIN UNDO/REDO IMPLEMENTATION ---
-            */}
             <NoteEditorWithUndoRedo 
               editBuffer={editBuffer}
               setEditBuffer={setEditBuffer}
               theme={theme}
-              isDark={isDark}
+              isDark={uiTheme === 'dark' || uiTheme === 'contrast'}
             />
-            {/* 
-              --- END UNDO/REDO IMPLEMENTATION ---
-            */}
             {/* Tag adder */}
             <div style={{ marginBottom: 8 }}>
               <div style={{
@@ -897,7 +869,7 @@ function NoteEaseMainContainer() {
                     key={tag + idx}
                     style={{
                       background: getTagColor(tag),
-                      color: isDark ? '#251e1a' : '#261c13',
+                      color: uiTheme === 'dark' ? '#251e1a' : '#261c13',
                       padding: '2px 9px 2px 7px',
                       borderRadius: 7,
                       marginRight: 2,
